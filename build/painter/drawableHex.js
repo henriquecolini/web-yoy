@@ -8,7 +8,7 @@ define(["require", "exports", "./drawableBounds"], function (require, exports, d
                 let ctx = this.painter.context;
                 let u = this.painter.unit;
                 ctx.strokeStyle = this.stroke;
-                ctx.lineWidth = this.lineWidth;
+                ctx.lineWidth = this.lineWidth * u;
                 ctx.fillStyle = this.fill;
                 ctx.beginPath();
                 ctx.moveTo(u * (this.x + (this.w / 4)), u * this.y);

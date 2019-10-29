@@ -2,7 +2,15 @@ define(["require", "exports", "./painter/painter", "./painter/drawableHex"], fun
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     let painter = new painter_1.default(document.getElementById("canvas"));
-    painter.add(new drawableHex_1.default(painter, "#20d0F0", "#106080", 5, 0, 0, 10, 10 * drawableHex_1.default.PERFECT_H_TO_W));
+    for (let x = 0; x < 20; x++) {
+        for (let y = 0; y < 20; y++) {
+            if (Math.random() > 0.4) {
+                let w = 10;
+                let h = w * drawableHex_1.default.PERFECT_H_TO_W;
+                painter.add(new drawableHex_1.default(painter, "#20d0F0", "#106080", 0.8, x * ((3 * w) / 4), y * h + (x % 2 === 1 ? (h / 2) : 0), w, h));
+            }
+        }
+    }
     document.addEventListener("keydown", (evt) => {
         switch (evt.key) {
             case "a":

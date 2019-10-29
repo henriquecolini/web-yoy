@@ -47,6 +47,7 @@ define(["require", "exports"], function (require, exports) {
         get context() { return this.context_; }
         get x() { return this.x_; }
         get y() { return this.y_; }
+        get zoom() { return this.zoom_; }
         set x(x2) {
             this.context_.transform(1, 0, 0, 1, this.unit_ * (this.x_ - x2), 0);
             this.x_ = x2;

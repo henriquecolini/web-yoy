@@ -23,7 +23,7 @@ export default class DrawableHex extends DrawableBounds {
 		let u = this.painter.unit;
 		
 		ctx.strokeStyle = this.stroke;
-		ctx.lineWidth = this.lineWidth;
+		ctx.lineWidth = this.lineWidth*u;
 		ctx.fillStyle = this.fill;
 
 		ctx.beginPath();
