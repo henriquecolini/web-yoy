@@ -74,10 +74,15 @@ export default class Painter {
 	}
 
 	public zoomAbout(z: number, x: number = 0, y: number = 0) {
+		// let oldMatix = this.context_.getTransform();
 		this.context_.transform(1,0,0,1,(x+this.x_)*this.unit_,(y+this.y_)*this.unit_);
 		this.context_.transform(z,0,0,z,0,0);
 		this.context_.transform(1,0,0,1,-(x+this.x_)*this.unit_,-(y+this.y_)*this.unit_);
 		this.zoom_ *= z;
+		// let newMatix = this.context_.getTransform();
+		// this.x_ = -newMatix.e/this.unit_;
+		// this.y_ = -newMatix.f/this.unit_;
+		// console.log("oldX: " + (oldMatix.e/this.unit_) + "        newX: " + (newMatix.e/this.unit_) + "          x: " + this.x_);
 		this.draw();
 	}
 

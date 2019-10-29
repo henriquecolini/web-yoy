@@ -2,6 +2,8 @@ import Painter from "./painter/painter";
 import DrawableHex from "./painter/drawableHex";
 
 let painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
+let mouseX = 0;
+let mouseY = 0;
 
 for (let x = 0; x < 20; x++) {
 	for (let y = 0; y < 20; y++) {
@@ -35,20 +37,14 @@ document.addEventListener("wheel", (evt) => {
 	let sign = evt.deltaY > 0 ? -1 : evt.deltaY == 0 ? 0 : 1;
 	let zoom = sign > 0 ? 1.05 : 1/1.05;
 
-	painter.zoomAbout(zoom, (painter.canvas.width/painter.unit)/2, (painter.canvas.height/painter.unit)/2)
+	let px = (painter.canvas.width/2)/painter.unit;//(mouseX)/painter.unit;
+	let py = (painter.canvas.height/2)/painter.unit;//(mouseY)/painter.unit;
 
-	// let times = 5;
-	// let i = 0;
+	painter.zoomAbout(zoom, px, py);
 
-	// clearInterval(scrollHandler);
+});
 
-	// scrollHandler = setInterval(()=>{
-	// 	if (i >= times) clearInterval(scrollHandler);
-	// 	else {			
-	// 		camera.zoom *= sign > 0 ? 1.01 : 1/1.01;
-	// 		draw();
-	// 		i++;
-	// 	}
-	// }, 1);
-
+document.addEventListener('mousemove', (evt) => {	
+	mouseX = evt.pageX;
+	mouseY = evt.pageY;
 });
