@@ -1,8 +1,8 @@
-define(["require", "exports", "./painter/painter", "./painter/drawableRect"], function (require, exports, painter_1, drawableRect_1) {
+define(["require", "exports", "./painter/painter", "./painter/drawableHex"], function (require, exports, painter_1, drawableHex_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     let painter = new painter_1.default(document.getElementById("canvas"));
-    painter.add(new drawableRect_1.default(painter, "red", 0, 0, 10, 10));
+    painter.add(new drawableHex_1.default(painter, "red", 0, 0, 10, 10 * drawableHex_1.default.PERFECT_H_TO_W));
     document.addEventListener("keydown", (evt) => {
         switch (evt.key) {
             case "a":

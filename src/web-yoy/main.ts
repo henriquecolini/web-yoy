@@ -1,9 +1,9 @@
 import Painter from "./painter/painter";
-import DrawableRect from "./painter/drawableRect";
+import DrawableHex from "./painter/drawableHex";
 
 let painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
 
-painter.add(new DrawableRect(painter, "red", 0, 0, 10, 10))
+painter.add(new DrawableHex(painter, "red", 0, 0, 10, 10 * DrawableHex.PERFECT_H_TO_W))
 
 document.addEventListener("keydown", (evt) => {
 	switch(evt.key) {
@@ -16,7 +16,6 @@ document.addEventListener("keydown", (evt) => {
 
 document.addEventListener("wheel", (evt) => {
 
-	// evt.preventDefault();	
 	let sign = evt.deltaY > 0 ? -1 : evt.deltaY == 0 ? 0 : 1;
 	let zoom = sign > 0 ? 1.05 : 1/1.05;
 
