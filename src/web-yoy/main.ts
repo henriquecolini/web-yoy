@@ -3,7 +3,7 @@ import DrawableHex from "./painter/drawableHex";
 
 let painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
 
-painter.add(new DrawableHex(painter, "red", 0, 0, 10, 10 * DrawableHex.PERFECT_H_TO_W))
+painter.add(new DrawableHex(painter, "#20d0F0", "#106080", 5, 0, 0, 10, 10 * DrawableHex.PERFECT_H_TO_W))
 
 document.addEventListener("keydown", (evt) => {
 	switch(evt.key) {

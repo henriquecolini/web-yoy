@@ -6,11 +6,15 @@ export default class DrawableHex extends DrawableBounds {
 	public static PERFECT_W_TO_H = (2*Math.sqrt(3))/3;
 	public static PERFECT_H_TO_W = Math.sqrt(3)/2;
 
-	private color: string;
+	private fill: string;
+	private stroke: string;
+	private lineWidth: number;
 
-	constructor(painter: Painter, color: string, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
+	constructor(painter: Painter, fill: string, stroke: string, lineWidth: number, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
 		super(painter,x,y,w,h);
-		this.color = color;
+		this.fill = fill;
+		this.stroke = stroke;
+		this.lineWidth = lineWidth;
 	}
 
 	public draw = () => {
@@ -18,8 +22,10 @@ export default class DrawableHex extends DrawableBounds {
 		let ctx = this.painter.context;
 		let u = this.painter.unit;
 		
+		ctx.strokeStyle = this.stroke;
+		ctx.lineWidth = this.lineWidth;
+		ctx.fillStyle = this.fill;
 
-		ctx.fillStyle = this.color;
 		ctx.beginPath();
 		ctx.moveTo(u*(this.x+(this.w/4)),u*this.y);
 		ctx.lineTo(u*(this.x+((3*this.w)/4)),u*this.y);
@@ -27,8 +33,11 @@ export default class DrawableHex extends DrawableBounds {
 		ctx.lineTo(u*(this.x+((3*this.w)/4)),u*(this.y+this.h));
 		ctx.lineTo(u*(this.x+(this.w/4)),u*(this.y+this.h));
 		ctx.lineTo(u*this.x,u*(this.y+(this.h/2)));
+		
+		ctx.closePath();
 
 		ctx.fill();
+		ctx.stroke();
 
 	}
 
