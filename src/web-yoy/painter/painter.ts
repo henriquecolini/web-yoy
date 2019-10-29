@@ -2,88 +2,83 @@ import Drawable from "./drawable";
 
 export default class Painter {
 
-	private canvas_: HTMLCanvasElement;
-	private context_: CanvasRenderingContext2D;
-	private unit_: number = 1;
-	private x_: number = 0;
-	private y_: number = 0;
-	private zoom_: number = 1;
+	private _canvas: HTMLCanvasElement;
+	private _context: CanvasRenderingContext2D;
+	private _unit: number = 1;
+	private _camera = new Camera(this, 0, 0, 1);
 
 	private drawables: Drawable[];
 
 	constructor(canvas: HTMLCanvasElement) {
-		this.canvas_ = canvas;
-		this.context_ = canvas.getContext("2d");
+		this._canvas = canvas;
+		this._context = canvas.getContext("2d");
 		this.drawables = [];
 		window.addEventListener("resize", this.updateSize);
 		this.updateSize();
 	}
 
 	public draw = () => {
+		
+		this._context.setTransform(1,0,0,1,0,0);
+		this._context.clearRect(0,0,this._canvas.width,this._canvas.height);
 
-		let u = this.unit_;
-		let z = this.zoom_;
-		let x = this.x_;
-		let y = this.y_;
-		let ctx = this.context_;
-
-		ctx.save();
-		ctx.setTransform(1,0,0,1,0,0);
-		ctx.clearRect(0,0,this.canvas_.width,this.canvas_.height);
-		ctx.restore();
+		this.camera.apply();
 		
 		for (let i = 0; i < this.drawables.length; i++) this.drawables[i].draw();
 	}
 
 	private updateSize = () => {
 		let oldMatix = this.context.getTransform();
-		this.canvas_.height = document.documentElement.clientHeight;
-		this.canvas_.width = document.documentElement.clientWidth;
-		this.unit_ = this.canvas_.width / 100;
+		this._canvas.height = document.documentElement.clientHeight;
+		this._canvas.width = document.documentElement.clientWidth;
+		this._unit = this._canvas.width / 100;
 		this.context.setTransform(oldMatix);
 		this.draw();
 	}
 
-	public add(drawable: Drawable) {
+	public add = (drawable: Drawable) => {
 		this.drawables.push(drawable);
 		this.draw();
 	}
 
-	public remove(drawable: Drawable) {
+	public remove = (drawable: Drawable) => {
 		this.drawables.splice(this.drawables.indexOf(drawable));
 		this.draw();
 	}
 
-	get unit() { return this.unit_; }
-	get canvas() { return this.canvas_; }
-	get context() { return this.context_; }
-	get x() { return this.x_; }
-	get y() { return this.y_; }
-	get zoom() { return this.zoom_; }
+	get unit() { return this._unit; }
+	get canvas() { return this._canvas; }
+	get context() { return this._context; }	
+	get camera() { return this._camera; }
 
-	set x(x2: number) {
-		this.context_.transform(1,0,0,1,this.unit_*(this.x_-x2),0);
-		this.x_ = x2;
-		this.draw();
+}
+
+class Camera {
+
+	private _x: number;
+	private _y: number;
+	private _zoom: number;
+	private painter: Painter;
+
+	constructor (painter: Painter, x: number, y: number, zoom: number) {
+		this.painter = painter;
+		this._x = x;
+		this._y = y;
+		this._zoom = zoom;
 	}
 
-	set y(y2: number) {
-		this.context_.transform(1,0,0,1,0,this.unit_*(this.y_-y2));
-		this.y_ = y2;
-		this.draw();
+	public apply = () => {
+		const u = this.painter.unit;
+		this.painter.context.translate(u*(((this.painter.canvas.width/2)/u)),u*(((this.painter.canvas.height/2)/u)));
+		this.painter.context.scale(this._zoom,this._zoom);
+		this.painter.context.translate(u*(-this._x), u*(-this._y));
 	}
 
-	public zoomAbout(z: number, x: number = 0, y: number = 0) {
-		// let oldMatix = this.context_.getTransform();
-		this.context_.transform(1,0,0,1,(x+this.x_)*this.unit_,(y+this.y_)*this.unit_);
-		this.context_.transform(z,0,0,z,0,0);
-		this.context_.transform(1,0,0,1,-(x+this.x_)*this.unit_,-(y+this.y_)*this.unit_);
-		this.zoom_ *= z;
-		// let newMatix = this.context_.getTransform();
-		// this.x_ = -newMatix.e/this.unit_;
-		// this.y_ = -newMatix.f/this.unit_;
-		// console.log("oldX: " + (oldMatix.e/this.unit_) + "        newX: " + (newMatix.e/this.unit_) + "          x: " + this.x_);
-		this.draw();
-	}
+	get x() { return this._x; }
+	get y() { return this._y; }
+	get zoom() { return this._zoom; }
+	set x(x2: number) { this._x = x2; this.painter.draw(); }
+	set y(y2: number) { this._y = y2; this.painter.draw(); }
+	set zoom(zoom2: number) { this._zoom = zoom2; this.painter.draw(); }
 
 }

@@ -25,10 +25,10 @@ for (let x = 0; x < 20; x++) {
 
 document.addEventListener("keydown", (evt) => {
 	switch(evt.key) {
-		case "a": painter.x -= 1; break;
-		case "d": painter.x += 1; break;
-		case "w": painter.y -= 1; break;
-		case "s": painter.y += 1; break;
+		case "a": painter.camera.x -= 1; break;
+		case "d": painter.camera.x += 1; break;
+		case "w": painter.camera.y -= 1; break;
+		case "s": painter.camera.y += 1; break;
 	}
 });
 
@@ -37,10 +37,7 @@ document.addEventListener("wheel", (evt) => {
 	let sign = evt.deltaY > 0 ? -1 : evt.deltaY == 0 ? 0 : 1;
 	let zoom = sign > 0 ? 1.05 : 1/1.05;
 
-	let px = (painter.canvas.width/2)/painter.unit;//(mouseX)/painter.unit;
-	let py = (painter.canvas.height/2)/painter.unit;//(mouseY)/painter.unit;
-
-	painter.zoomAbout(zoom, px, py);
+	painter.camera.zoom *= zoom;
 
 });
 
