@@ -1,9 +1,13 @@
 import Painter from "./painter/painter";
 import DrawableHex from "./painter/drawableHex";
+import World, { EMPTY_COLOUR } from "./world";
+import DrawableWorld from "./painter/drawableWorld";
 
 export default class Game {
 
 	private painter: Painter;
+	private world: World;
+	private drawableWorld: DrawableWorld;
 
 	private keys = {w: false, a: false, s: false, d: false};
 
@@ -16,24 +20,10 @@ export default class Game {
 	constructor() {
 
 		this.painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
-
-		for (let x = 0; x < 20; x++) {
-			for (let y = 0; y < 20; y++) {
-				if (Math.random() > 0.4) {
-					let w = 10;
-					let h = w * DrawableHex.PERFECT_H_TO_W;		
-					this.painter.add(
-						new DrawableHex(
-							this.painter, "#20d0F0", "#106080", 0.8,
-							x*((3*w)/4),
-							y*h + (x%2 === 1 ? (h/2) : 0),
-							w,
-							h
-						)
-					);
-				}
-			}	
-		}
+		this.world = new World(4, 20, 20);
+		this.drawableWorld = new DrawableWorld(this.painter, this.world);
+		
+		this.painter.add(this.drawableWorld);
 
 		document.addEventListener("keydown", this.handleKeyDown);
 		document.addEventListener("keyup", this.handleKeyUp);

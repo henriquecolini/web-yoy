@@ -1,4 +1,4 @@
-define(["require", "exports", "./painter/painter", "./painter/drawableHex"], function (require, exports, painter_1, drawableHex_1) {
+define(["require", "exports", "./painter/painter", "./world", "./painter/drawableWorld"], function (require, exports, painter_1, world_1, drawableWorld_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class Game {
@@ -77,15 +77,9 @@ define(["require", "exports", "./painter/painter", "./painter/drawableHex"], fun
                     this.panning = false;
             };
             this.painter = new painter_1.default(document.getElementById("canvas"));
-            for (let x = 0; x < 20; x++) {
-                for (let y = 0; y < 20; y++) {
-                    if (Math.random() > 0.4) {
-                        let w = 10;
-                        let h = w * drawableHex_1.default.PERFECT_H_TO_W;
-                        this.painter.add(new drawableHex_1.default(this.painter, "#20d0F0", "#106080", 0.8, x * ((3 * w) / 4), y * h + (x % 2 === 1 ? (h / 2) : 0), w, h));
-                    }
-                }
-            }
+            this.world = new world_1.default(4, 20, 20);
+            this.drawableWorld = new drawableWorld_1.default(this.painter, this.world);
+            this.painter.add(this.drawableWorld);
             document.addEventListener("keydown", this.handleKeyDown);
             document.addEventListener("keyup", this.handleKeyUp);
             document.addEventListener("wheel", this.handleWheel);
