@@ -17,7 +17,7 @@ export default class DrawableWorld extends Drawable {
 				const hex = this.world.hexAt(x,y);
 				if (hex) {
 					let w = 10;
-					let h = w * DrawableHex.PERFECT_H_TO_W;		
+					let h = w * DrawableHex.PERFECT_H_TO_W;						
 					this.drawWorld.push(
 						new DrawableHex(
 							this.painter, hex.team ? hex.team.color : EMPTY_COLOUR, "#000000", 0.8,

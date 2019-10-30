@@ -7,8 +7,7 @@ export interface Hex {
 }
 
 export interface Team {
-	color: string,
-	zones: {hexes: Hex[], money: number, name: string}[]
+	color: string
 }
 
 export const EMPTY_COLOUR = "#616161";
@@ -32,52 +31,81 @@ export default class World {
 	private _width: number;
 	private _height: number;
 	private _teams: Team[];
+	private _capitals: {
+		money: number,
+		name: string,
+		x: number,
+		y: number
+	}[];
 	private changeListeners: (()=>void)[];
 
 	constructor(level: Level) {
+
+		this.changeListeners = [];
 		this._width = level.width;
+
 		this._teams = [];
-		for (let i = 0; i < level.teams.length; i++) {
-			const t = level.teams[i];
-			this._teams[i] = {color: STD_COLOURS[i%STD_COLOURS.length], zones: []};
-			for (let j = 0; j < t.zones.length; j++) {
-				const z = t.zones[j];
-				this._teams[i].zones[i] = {hexes: [], money: z.money, name: z.name};
-			}
-		}
+		for (let i = 0; i < level.teamCount; i++) this._teams[i] = {color: STD_COLOURS[i%STD_COLOURS.length]};
+
+		this._capitals = [];
+		for (let i = 0; i < level.capitals.length; i++) this._capitals[i] = {money: level.capitals[i].money, name: level.capitals[i].name, x: undefined, y: undefined};
+
 		let strMap = level.map.split(" ");
+		this._world = [];
+
+		let foundCapitals = [] as {hex: Hex, teamIndex: number, capitalIndex: number, x: number, y: number}[];
+
+		for (let i = 0; i < strMap.length; i++) {
+
+			const str = strMap[i];
+			let hex: Hex = undefined;
+
+			let x = i%this._width;
+			let y = Math.floor(i/this._width);
+
+			if (str !== ".") {
+
+				if (str === "#") hex = { team: undefined, piece: undefined, pieceLevel: undefined };
+				else {
+					let parts = str.split("$");
+				
+					let teamIndex = parts[0] ? parseInt(parts[0]) : undefined;
+					let capitalIndex = parts[1] ? parseInt(parts[1]) : undefined;
+
+					if (teamIndex !== undefined) {
+						hex = { team: this._teams[teamIndex], piece: capitalIndex !== undefined ? "capital" : undefined, pieceLevel: undefined };
+						if (capitalIndex !== undefined) {
+							this._capitals[capitalIndex].x = x;
+							this._capitals[capitalIndex].y = y;
+						}
+					}
+				}
+			}
+
+			if (!this._world[x]) {this._world[x] = [];}
+			this._world[x][y] = hex;
+
+		}
+
+		for (let i = 0; i < level.pieces.length; i++) {
+			const piece = level.pieces[i];
+			this._world[piece.x][piece.y].piece = piece.type;
+			this._world[piece.x][piece.y].pieceLevel = piece.level;
+		}
+
+		let height = 0;
+
+		for (let x = 0; x < this._world.length; x++) {
+			const column = this._world[x];
+			if (column.length > height) height = column.length;
+		}
+
+		this._height = height;
+
 	}
 
-	// constructor(teamCount: number, worldWidth: number, worldHeight: number) {
-	// 	this._teams = [];
-	// 	this._width = worldWidth;
-	// 	this._height = worldHeight;
-	// 	this.changeListeners = [];
-	// 	for (let i = 0; i < teamCount; i++) {
-	// 		this._teams[i] = {color: STD_COLOURS[i%STD_COLOURS.length], money: 0, zones: []};
-	// 	}
-	// 	this._world = [];
-	// 	for (let x = 0; x < worldWidth; x++) {
-	// 		for (let y = 0; y < worldHeight; y++) {
-	// 			this._world[(worldWidth*y)+x] = {team: undefined, piece: undefined, pieceLevel: undefined};
-	// 		}
-	// 	}
-	// 	let sides: Hex[] = [];
-	// 	for (let i = 0; i < this._world.length; i++) {
-	// 		let {x,y} = this.unpackXY(i);			
-	// 		if (this.neighbours(x,y).length < 6) sides.push(this._world[i]);
-	// 	}
-		
-	// 	if (sides.length >= teamCount) {
-	// 		for (let i = 0; i < teamCount; i++) {				
-	// 			sides[i].team = this._teams[i];
-	// 			this._teams[i].zones = [[sides[i]]];
-	// 		}
-	// 	}
-	// }
-
 	public hexAt(x: number, y: number): Hex {
-		return this._world[x][y];
+		return this._world[x] ? this._world[x][y] : undefined;
 	}
 
 	public neighbours(x: number, y: number) {
@@ -88,13 +116,28 @@ export default class World {
 		let n4 = this.hexAt(x,y+1);
 		let n5 = this.hexAt(x-1,y+1);
 		let n6 = this.hexAt(x+1,y+1);
-		if(n1) list.push(n1);
-		if(n2) list.push(n2);
-		if(n3) list.push(n3);
-		if(n4) list.push(n4);
-		if(n5) list.push(n5);
-		if(n6) list.push(n6);
+		if(n1) list.push({hex: n1, xOff: 0, yOff: -1});
+		if(n2) list.push({hex: n2, xOff: -1, yOff: 0});
+		if(n3) list.push({hex: n3, xOff: 1, yOff: 0});
+		if(n4) list.push({hex: n4, xOff: 0, yOff: 1});
+		if(n5) list.push({hex: n5, xOff: -1, yOff: 1});
+		if(n6) list.push({hex: n6, xOff: 1, yOff: 1});
 		return list;
+	}
+
+	public findConnected(x: number, y: number): Hex[] {
+		let targetTeam = this.hexAt(x,y).team;
+		let visited = [] as Hex[];
+		const sub = (sx: number, sy: number) => {
+			visited.push(this.hexAt(sx,sy));
+			let neis = this.neighbours(sx,sy);
+			for (let i = 0; i < neis.length; i++) {
+				const nei = neis[i];
+				if ((nei.hex.team === targetTeam) && (visited.indexOf(nei.hex) < 0)) sub(sx+nei.xOff, sy+nei.yOff);
+			}
+		}
+		sub(x,y);
+		return visited;
 	}
 
 	public addChangeListener(listener: ()=>void) {
@@ -113,5 +156,6 @@ export default class World {
 	get width() { return this._width; }
 	get height() { return this._height; }
 	get teams() { return this._teams; }
+	get capitals() { return this._capitals; }
 
 }

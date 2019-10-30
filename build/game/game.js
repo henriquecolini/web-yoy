@@ -1,4 +1,4 @@
-define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld"], function (require, exports, painter_1, world_1, drawableWorld_1) {
+define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld", "./levels"], function (require, exports, painter_1, world_1, drawableWorld_1, levels_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class Game {
@@ -78,7 +78,7 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                     this.panning = false;
             };
             this.painter = new painter_1.default(document.getElementById("canvas"));
-            this.world = new world_1.default(4, 20, 20);
+            this.world = new world_1.default(levels_1.default.medium[0]);
             this.drawableWorld = new drawableWorld_1.default(this.painter, this.world);
             this.painter.add(this.drawableWorld);
             this.world.addChangeListener(this.drawableWorld.updateHexes);

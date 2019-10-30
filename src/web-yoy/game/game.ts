@@ -2,6 +2,7 @@ import Painter from "../painter/painter";
 import DrawableHex from "../painter/drawableHex";
 import World, { EMPTY_COLOUR } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
+import LEVELS from "./levels";
 
 export default class Game {
 
@@ -20,7 +21,7 @@ export default class Game {
 	constructor() {
 
 		this.painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
-		this.world = new World(4, 20, 20);
+		this.world = new World(LEVELS.medium[0]);
 		this.drawableWorld = new DrawableWorld(this.painter, this.world);
 				
 		this.painter.add(this.drawableWorld);
