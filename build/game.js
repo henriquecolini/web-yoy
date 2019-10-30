@@ -20,6 +20,7 @@ define(["require", "exports", "./painter/painter", "./world", "./painter/drawabl
                 }
                 this.painter.camera.x += (camMove.x * this.camSpeed) * deltaTime;
                 this.painter.camera.y += (camMove.y * this.camSpeed) * deltaTime;
+                this.fpsCounter.innerHTML = Math.ceil(1 / deltaTime) + " fps";
             };
             this.handleKeyDown = (evt) => {
                 if (!evt.repeat) {
@@ -80,6 +81,7 @@ define(["require", "exports", "./painter/painter", "./world", "./painter/drawabl
             this.world = new world_1.default(4, 20, 20);
             this.drawableWorld = new drawableWorld_1.default(this.painter, this.world);
             this.painter.add(this.drawableWorld);
+            this.fpsCounter = document.getElementById("fps");
             document.addEventListener("keydown", this.handleKeyDown);
             document.addEventListener("keyup", this.handleKeyUp);
             document.addEventListener("wheel", this.handleWheel);

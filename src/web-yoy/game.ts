@@ -9,12 +9,12 @@ export default class Game {
 	private world: World;
 	private drawableWorld: DrawableWorld;
 
-	private keys = {w: false, a: false, s: false, d: false};
+	private fpsCounter: HTMLElement;
+	private keys = {w: false, a: false, s: false, d: false};	
 
 	private mouse = {x: 0, y: 0};		
 	private pan = {x: 0, y: 0, cx: 0, cy: 0};
 	private camSpeed = 40;
-
 	private _panning = false;
 
 	constructor() {
@@ -22,8 +22,10 @@ export default class Game {
 		this.painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
 		this.world = new World(4, 20, 20);
 		this.drawableWorld = new DrawableWorld(this.painter, this.world);
-		
+				
 		this.painter.add(this.drawableWorld);
+
+		this.fpsCounter = document.getElementById("fps");
 
 		document.addEventListener("keydown", this.handleKeyDown);
 		document.addEventListener("keyup", this.handleKeyUp);
@@ -62,6 +64,8 @@ export default class Game {
 
 		this.painter.camera.x += (camMove.x*this.camSpeed) * deltaTime;
 		this.painter.camera.y += (camMove.y*this.camSpeed) * deltaTime;
+
+		this.fpsCounter.innerHTML = Math.ceil(1/deltaTime) + " fps";
 
 	}
 
