@@ -68,10 +68,18 @@ class Camera {
 	}
 
 	public apply = () => {
+		
 		const u = this.painter.unit;
-		this.painter.context.translate(u*(((this.painter.canvas.width/2)/u)),u*(((this.painter.canvas.height/2)/u)));
-		this.painter.context.scale(this._zoom,this._zoom);
-		this.painter.context.translate(u*(-this._x), u*(-this._y));
+		const z = this._zoom;
+		const x = this._x;
+		const y = this._y;
+		const w = this.painter.canvas.width;
+		const h = this.painter.canvas.height;
+
+		this.painter.context.translate(u*(((w/2)/u)),u*(((h/2)/u)));
+		this.painter.context.scale(z,z);
+		this.painter.context.translate(u*(-x), u*(-y));
+
 	}
 
 	get x() { return this._x; }
