@@ -1,7 +1,7 @@
-import Painter from "./painter/painter";
-import DrawableHex from "./painter/drawableHex";
+import Painter from "../painter/painter";
+import DrawableHex from "../painter/drawableHex";
 import World, { EMPTY_COLOUR } from "./world";
-import DrawableWorld from "./painter/drawableWorld";
+import DrawableWorld from "../painter/drawableWorld";
 
 export default class Game {
 
@@ -24,6 +24,7 @@ export default class Game {
 		this.drawableWorld = new DrawableWorld(this.painter, this.world);
 				
 		this.painter.add(this.drawableWorld);
+		this.world.addChangeListener(this.drawableWorld.updateHexes);
 
 		this.fpsCounter = document.getElementById("fps");
 

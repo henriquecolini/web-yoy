@@ -1,5 +1,5 @@
 import DrawableHex from "./drawableHex";
-import World, { EMPTY_COLOUR } from "../world";
+import World, { EMPTY_COLOUR } from "game/world";
 import Drawable from "./drawable";
 import Painter from "./painter";
 

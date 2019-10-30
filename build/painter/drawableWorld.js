@@ -1,4 +1,4 @@
-define(["require", "exports", "./drawableHex", "../world", "./drawable"], function (require, exports, drawableHex_1, world_1, drawable_1) {
+define(["require", "exports", "./drawableHex", "game/world", "./drawable"], function (require, exports, drawableHex_1, world_1, drawable_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableWorld extends drawable_1.default {
