@@ -47,10 +47,49 @@ export default class World {
 				this._world[(worldWidth*y)+x] = {team: undefined, piece: undefined, pieceLevel: undefined};
 			}
 		}
+		let sides: Hex[] = [];
+		for (let i = 0; i < this._world.length; i++) {
+			let {x,y} = this.unpackXY(i);			
+			if (this.neighbours(x,y).length < 6) sides.push(this._world[i]);
+		}
+		// console.log(sides);
+		
+		if (sides.length >= teamCount) {
+			let teamI = 0;
+			for (let teamI = 0; teamI < teamCount; teamI++) {
+				let index = Math.floor(Math.random()*sides.length);
+				console.log(index);
+				
+				sides[index].team = this._teams[teamI];
+				this._teams[teamI].zones = [[sides[index]]];
+				sides.splice(index,1);
+			}
+		}
+	}
+
+	public unpackXY(i: number): {x: number, y: number} {
+		return {x: i%this._width, y: Math.floor(i/this._width)};
 	}
 
 	public hexAt(x: number, y: number) {
 		return this._world[(this._width*y)+x];
+	}
+
+	public neighbours(x: number, y: number) {
+		let list = [];
+		let n1 = this.hexAt(x,y-1);
+		let n2 = this.hexAt(x-1,y);
+		let n3 = this.hexAt(x+1,y);
+		let n4 = this.hexAt(x,y+1);
+		let n5 = this.hexAt(x-1,y+1);
+		let n6 = this.hexAt(x+1,y+1);
+		if(n1) list.push(n1);
+		if(n2) list.push(n2);
+		if(n3) list.push(n3);
+		if(n4) list.push(n4);
+		if(n5) list.push(n5);
+		if(n6) list.push(n6);
+		return list;
 	}
 
 	public addChangeListener(listener: ()=>void) {
