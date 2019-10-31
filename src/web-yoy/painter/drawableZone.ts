@@ -10,7 +10,7 @@ export default class DrawableZone extends Drawable {
 	private _lineWidth: number;
 	private _fill: string;
 	private _stroke: string;
-	private polys: {x: number, y: number}[][];
+	private lines: { x1: number, y1: number, x2: number, y2: number}[];
 
 	constructor (painter: Painter, world: World, zone: Zone, lineWidth: number, stroke: string, fill: string) {
 		super(painter);
@@ -19,15 +19,34 @@ export default class DrawableZone extends Drawable {
 		this._lineWidth = lineWidth;
 		this._fill = fill;
 		this._stroke = stroke;
-		this.recalculatePoints();
+		this.recalculateLines();
 	}
 
 	public draw = () => {
+		if (this._stroke || this._fill) {
+			let ctx = this.painter.context;
+			let u = this.painter.unit;
 
+			ctx.strokeStyle = this._stroke;
+			ctx.fillStyle = this._fill;
+			ctx.lineWidth = this._lineWidth * u;
+			ctx.lineCap = "round";
+			
+			for (let i = 0; i < this.lines.length; i++) {
+				
+				const p = this.lines[i];
+
+				ctx.beginPath();
+				ctx.moveTo(p.x1, p.y1);
+				ctx.lineTo(p.x2, p.y2);				
+				if (this._stroke) ctx.stroke();
+				if (this._fill) ctx.fill();
+			}
+		}
 	}
 
-	private recalculatePoints = () => {
-		let lines = [] as {x1: number, y1: number, x2: number, y2: number}[];
+	private recalculateLines = () => {
+		this.lines = [];
 		for (let i = 0; i < this._zone.hexes.length; i++) {
 
 			const hexXY = this._zone.hexes[i];
@@ -39,8 +58,8 @@ export default class DrawableZone extends Drawable {
 
 				let w = 10;
 				let h = w * DrawableHex.PERFECT_H_TO_W;
-				let cx = x*(((3*w)/4)-0.08);
-				let cy = y*(h-0.08) + (x%2 === 1 ? ((h-0.08)/2) : 0);
+				let cx = x*((3*w)/4);
+				let cy = y*h + (x%2 === 1 ? (h/2) : 0);
 
 				let n0 = this.world.hexAt(x,y-1);
 				let n3 = this.world.hexAt(x,y+1);
@@ -66,12 +85,7 @@ export default class DrawableZone extends Drawable {
 				for (let i = 0; i < 6; i++) {
 					if (outlines[i]) {
 						let next = (i==5) ? 0 : (i+1);
-						lines.push({
-							x1: p[i].x,
-							y1: p[i].y,
-							x2: p[next].x,
-							y2: p[next].y,
-						});
+						this.lines.push({x1: p[i].x, y1: p[i].y, x2: p[next].x, y2: p[next].y});
 					}
 				}
 			}
@@ -85,7 +99,7 @@ export default class DrawableZone extends Drawable {
 	
 	set zone(zone2: Zone) {
 		this._zone = zone2;
-		this.recalculatePoints();
+		this.recalculateLines();
 		this.painter.draw();
 	}
 	set lineWidth(lineWidth2: number) {

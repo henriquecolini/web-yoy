@@ -5,9 +5,27 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
         constructor(painter, world, zone, lineWidth, stroke, fill) {
             super(painter);
             this.draw = () => {
+                if (this._stroke || this._fill) {
+                    let ctx = this.painter.context;
+                    let u = this.painter.unit;
+                    ctx.strokeStyle = this._stroke;
+                    ctx.fillStyle = this._fill;
+                    ctx.lineWidth = this._lineWidth * u;
+                    ctx.lineCap = "round";
+                    for (let i = 0; i < this.lines.length; i++) {
+                        const p = this.lines[i];
+                        ctx.beginPath();
+                        ctx.moveTo(p.x1, p.y1);
+                        ctx.lineTo(p.x2, p.y2);
+                        if (this._stroke)
+                            ctx.stroke();
+                        if (this._fill)
+                            ctx.fill();
+                    }
+                }
             };
-            this.recalculatePoints = () => {
-                let lines = [];
+            this.recalculateLines = () => {
+                this.lines = [];
                 for (let i = 0; i < this._zone.hexes.length; i++) {
                     const hexXY = this._zone.hexes[i];
                     const hex = hexXY.hex;
@@ -16,8 +34,8 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
                     if (hex) {
                         let w = 10;
                         let h = w * drawableHex_1.default.PERFECT_H_TO_W;
-                        let cx = x * (((3 * w) / 4) - 0.08);
-                        let cy = y * (h - 0.08) + (x % 2 === 1 ? ((h - 0.08) / 2) : 0);
+                        let cx = x * ((3 * w) / 4);
+                        let cy = y * h + (x % 2 === 1 ? (h / 2) : 0);
                         let n0 = this.world.hexAt(x, y - 1);
                         let n3 = this.world.hexAt(x, y + 1);
                         let zig = -(x % 2) + 1;
@@ -37,12 +55,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
                         for (let i = 0; i < 6; i++) {
                             if (outlines[i]) {
                                 let next = (i == 5) ? 0 : (i + 1);
-                                lines.push({
-                                    x1: p[i].x,
-                                    y1: p[i].y,
-                                    x2: p[next].x,
-                                    y2: p[next].y,
-                                });
+                                this.lines.push({ x1: p[i].x, y1: p[i].y, x2: p[next].x, y2: p[next].y });
                             }
                         }
                     }
@@ -53,7 +66,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
             this._lineWidth = lineWidth;
             this._fill = fill;
             this._stroke = stroke;
-            this.recalculatePoints();
+            this.recalculateLines();
         }
         get zone() { return this._zone; }
         get lineWidth() { return this._lineWidth; }
@@ -61,7 +74,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
         get stroke() { return this._stroke; }
         set zone(zone2) {
             this._zone = zone2;
-            this.recalculatePoints();
+            this.recalculateLines();
             this.painter.draw();
         }
         set lineWidth(lineWidth2) {

@@ -11,9 +11,6 @@ export default class DrawableHex extends DrawableBounds {
 	private _fill: string;
 	private _stroke: string;
 	private _lineWidth: number;
-	private _outlines: [boolean,boolean,boolean,boolean,boolean,boolean];
-	private _outlineWidth: number;
-	private _outlineColor: string;
 
 	constructor(
 			painter: Painter,
@@ -23,21 +20,12 @@ export default class DrawableHex extends DrawableBounds {
 			x: number = 0, 
 			y: number = 0, 
 			w: number = 0, 
-			h: number = 0, 
-			outlines?: [boolean,boolean,boolean,boolean,boolean,boolean],
-			outlineWidth?: number,
-			outlineColor?: string) {
+			h: number = 0) {
 
 		super(painter,x,y,w,h);
 		this._fill = fill;
 		this._stroke = stroke;
 		this._lineWidth = lineWidth;
-
-		if (outlines) {
-			this._outlines = outlines;
-			this._outlineColor = outlineColor;
-			this._outlineWidth = outlineWidth;
-		}
 
 	}
 
@@ -82,31 +70,11 @@ export default class DrawableHex extends DrawableBounds {
 		ctx.stroke();
 		ctx.restore();
 
-		if (this._outlines) {
-
-			ctx.strokeStyle = this._outlineColor;
-			ctx.lineWidth = this._outlineWidth*u;
-			
-			for (let i = 0; i < 6; i++) {
-				if (this._outlines[i]) {
-					let next = (i==5) ? 0 : (i+1);
-					ctx.beginPath();
-					ctx.moveTo(p[i].x,p[i].y);
-					ctx.lineTo(p[next].x,p[next].y);
-					ctx.stroke();
-				}
-			}
-
-		}
-
 	}
 
 	get fill() { return this._fill; }
 	get stroke() { return this._stroke; }
 	get lineWidth() { return this._lineWidth; }
-	get outlines() { return this._outlines; }
-	get outlineWidth() { return this._outlineWidth; }
-	get outlineColor() { return this._outlineColor; }
 
 	set fill(fill2: string) {
 		this._fill = fill2;
@@ -120,17 +88,5 @@ export default class DrawableHex extends DrawableBounds {
 		this._lineWidth = lineWidth2;
 		this.painter.draw();
 	}
-	set outlines(outlines2: [boolean,boolean,boolean,boolean,boolean,boolean]) {
-		this._outlines = outlines2;
-		this.painter.draw();
-	}
-	set outlineWidth(outlineWidth2: number) {
-		this._outlineWidth = outlineWidth2;
-		this.painter.draw();
-	}
-	set outlineColor(outlineColor2: string) {
-		this._outlineColor = outlineColor2;
-		this.painter.draw();
-	}
-
+	
 }
