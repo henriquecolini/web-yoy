@@ -33,8 +33,8 @@ export default class DrawableZone extends Drawable {
 			const p = this.lines[i];
 
 			ctx.beginPath();
-			ctx.moveTo(p.x1, p.y1);
-			ctx.lineTo(p.x2, p.y2);
+			ctx.moveTo(p.x1*u, p.y1*u);
+			ctx.lineTo(p.x2*u, p.y2*u);
 			ctx.stroke();
 			
 		}
@@ -75,7 +75,7 @@ export default class DrawableZone extends Drawable {
 					!n5 || (n5.team != hex.team),
 				];
 
-				let p = DrawableHex.points(this.painter.unit,cx,cy,w,h);
+				let p = DrawableHex.points(1,cx,cy,w,h);
 
 				for (let i = 0; i < 6; i++) {
 					if (outlines[i]) {
