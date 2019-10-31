@@ -2,7 +2,7 @@ define(["require", "exports", "./drawableBounds"], function (require, exports, d
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableHex extends drawableBounds_1.default {
-        constructor(painter, fill, stroke, lineWidth, x = 0, y = 0, w = 0, h = 0) {
+        constructor(painter, fill, stroke, lineWidth, x = 0, y = 0, w = 0, h = 0, clickListener) {
             super(painter, x, y, w, h);
             this.draw = () => {
                 const ctx = this.painter.context;
@@ -30,9 +30,21 @@ define(["require", "exports", "./drawableBounds"], function (require, exports, d
                 ctx.stroke();
                 ctx.restore();
             };
+            this.onClick = () => {
+                if (this.clickListener)
+                    this.clickListener();
+            };
+            this.isHovering = (x, y) => {
+                x -= (this.w / 2);
+                y -= (this.h / 2);
+                return (((this.x - x) * (this.x - x)) + ((this.y - y) * (this.y - y))) < ((this.w / 2) * (this.w / 2));
+            };
             this._fill = fill;
             this._stroke = stroke;
             this._lineWidth = lineWidth;
+            if (clickListener)
+                this.clickListener = clickListener;
+            painter.registerClickable(this);
         }
         static points(u, x, y, w, h) {
             return [{ x: u * (x + (w / 4)), y: u * y },

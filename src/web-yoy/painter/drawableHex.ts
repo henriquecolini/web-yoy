@@ -1,9 +1,10 @@
 import Painter from "./painter";
 import DrawableBounds from "./drawableBounds";
+import Clickable from "./clickable";
 
 interface Point {x: number, y: number}
 
-export default class DrawableHex extends DrawableBounds {
+export default class DrawableHex extends DrawableBounds implements Clickable {
 	
 	public static PERFECT_W_TO_H = (2*Math.sqrt(3))/3;
 	public static PERFECT_H_TO_W = Math.sqrt(3)/2;
@@ -11,6 +12,7 @@ export default class DrawableHex extends DrawableBounds {
 	private _fill: string;
 	private _stroke: string;
 	private _lineWidth: number;
+	private clickListener: () => void;
 
 	constructor(
 			painter: Painter,
@@ -20,12 +22,15 @@ export default class DrawableHex extends DrawableBounds {
 			x: number = 0, 
 			y: number = 0, 
 			w: number = 0, 
-			h: number = 0) {
+			h: number = 0,
+			clickListener?: ()=>void) {
 
 		super(painter,x,y,w,h);
 		this._fill = fill;
 		this._stroke = stroke;
 		this._lineWidth = lineWidth;
+		if (clickListener) this.clickListener = clickListener;
+		painter.registerClickable(this);
 
 	}
 
@@ -70,6 +75,17 @@ export default class DrawableHex extends DrawableBounds {
 		ctx.stroke();
 		ctx.restore();
 
+	}
+
+	public onClick = () => {
+		if (this.clickListener)
+			this.clickListener();
+	}
+
+	public isHovering = (x: number, y: number) => {
+		x-=(this.w/2);
+		y-=(this.h/2);
+		return (((this.x-x)*(this.x-x))+((this.y-y)*(this.y-y))) < ((this.w/2)*(this.w/2));
 	}
 
 	get fill() { return this._fill; }

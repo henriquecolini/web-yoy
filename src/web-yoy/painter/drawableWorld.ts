@@ -1,5 +1,5 @@
 import DrawableHex from "./drawableHex";
-import World, { EMPTY_COLOUR, EMPTY_BORDER_COLOUR } from "game/world";
+import World, { EMPTY_COLOUR, EMPTY_BORDER_COLOUR, HexXY } from "game/world";
 import Drawable from "./drawable";
 import Painter from "./painter";
 import DrawableImage from "./drawableImage";
@@ -12,7 +12,7 @@ export default class DrawableWorld extends Drawable {
 	private zones: DrawableZone[];
 	private pieces: DrawableImage[];
 
-	constructor(painter: Painter, world: World) {
+	constructor(painter: Painter, world: World, hexClickListener?: (hexXY: HexXY)=>void) {
 		super(painter);
 		this.world = world;
 		this.hexes = [];
@@ -36,7 +36,12 @@ export default class DrawableWorld extends Drawable {
 							cx,
 							cy,
 							w+over,
-							h+over
+							h+over,
+							hexClickListener ? 
+							() => {
+								hexClickListener({hex: hex, x: x, y: y});
+							}
+							: undefined
 						)
 					);
 					if (hex.piece) {						

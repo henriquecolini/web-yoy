@@ -1,6 +1,6 @@
 import Painter from "../painter/painter";
 import DrawableHex from "../painter/drawableHex";
-import World, { EMPTY_COLOUR } from "./world";
+import World, { EMPTY_COLOUR, HexXY } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
 import LEVELS from "./levels";
 
@@ -22,7 +22,7 @@ export default class Game {
 
 		this.painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
 		this.world = new World(LEVELS.medium[0]);
-		this.drawableWorld = new DrawableWorld(this.painter, this.world);
+		this.drawableWorld = new DrawableWorld(this.painter, this.world, this.handleTileClick);
 				
 		this.painter.add(this.drawableWorld);
 		this.world.addChangeListener(this.drawableWorld.updateHexes);
@@ -69,6 +69,10 @@ export default class Game {
 
 		this.fpsCounter.innerHTML = Math.ceil(1/deltaTime) + " fps";
 
+	}
+
+	private handleTileClick = (hexXY: HexXY) => {
+		
 	}
 
 	private handleKeyDown = (evt: KeyboardEvent) => {

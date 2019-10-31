@@ -1,4 +1,6 @@
 import Drawable from "./drawable";
+import Clickable from "./clickable";
+import DrawableRect from "./drawableRect";
 
 export default class Painter {
 
@@ -8,13 +10,17 @@ export default class Painter {
 	private _camera = new Camera(this, 0, 0, 1);
 
 	private drawables: Drawable[];
+	private clickables: Clickable[];
 
 	constructor(canvas: HTMLCanvasElement) {
 		this._canvas = canvas;
 		this._context = canvas.getContext("2d");
 		this.drawables = [];
+		this.clickables = [];
 		window.addEventListener("resize", this.updateSize);
 		this.updateSize();
+		canvas.addEventListener("mousedown", this.handleClick);
+		this.add(new DrawableRect(this, "red", -0.5, -0.5, 1, 1));
 	}
 
 	public draw = () => {
@@ -36,6 +42,16 @@ export default class Painter {
 		this.draw();
 	}
 
+	private handleClick = (evt: MouseEvent) => {
+		if (evt.button === 0) {
+			for (let i = 0; i < this.clickables.length; i++) {
+				const clickable = this.clickables[i];
+				let {x,y} = this.camera.screenToWorld(evt.x, evt.y);
+				if (clickable.isHovering(x,y)) clickable.onClick();
+			}
+		}
+	}
+
 	public add = (drawable: Drawable) => {
 		this.drawables.push(drawable);
 		this.draw();
@@ -43,6 +59,16 @@ export default class Painter {
 
 	public remove = (drawable: Drawable) => {
 		this.drawables.splice(this.drawables.indexOf(drawable));
+		this.draw();
+	}
+
+	public registerClickable = (clickable: Clickable) => {
+		this.clickables.push(clickable);
+		this.draw();
+	}
+
+	public unregisterClickable = (clickable: Clickable) => {
+		this.clickables.splice(this.clickables.indexOf(clickable));
 		this.draw();
 	}
 
@@ -80,6 +106,21 @@ class Camera {
 		this.painter.context.scale(z,z);
 		this.painter.context.translate(u*(-x), u*(-y));
 
+	}
+
+	public screenToWorld = (screenX: number, screenY: number): {x: number, y: number} => {
+
+		let u = this.painter.unit;
+		let w = this.painter.canvas.width;
+		let h = this.painter.canvas.height;
+
+		// I'm not sure what I did but it works
+
+		return {
+			x: ((screenX/u) - ((w/2)/u) + (this.x * this.zoom)) / this.zoom,
+			y: ((screenY/u) - ((h/2)/u) + (this.y * this.zoom)) / this.zoom
+		};
+		
 	}
 
 	get x() { return this._x; }

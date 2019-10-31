@@ -22,6 +22,8 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.painter.camera.y += (camMove.y * this.camSpeed) * deltaTime;
                 this.fpsCounter.innerHTML = Math.ceil(1 / deltaTime) + " fps";
             };
+            this.handleTileClick = (hexXY) => {
+            };
             this.handleKeyDown = (evt) => {
                 if (!evt.repeat) {
                     switch (evt.key) {
@@ -79,7 +81,7 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             };
             this.painter = new painter_1.default(document.getElementById("canvas"));
             this.world = new world_1.default(levels_1.default.medium[0]);
-            this.drawableWorld = new drawableWorld_1.default(this.painter, this.world);
+            this.drawableWorld = new drawableWorld_1.default(this.painter, this.world, this.handleTileClick);
             this.painter.add(this.drawableWorld);
             this.world.addChangeListener(this.drawableWorld.updateHexes);
             this.fpsCounter = document.getElementById("fps");

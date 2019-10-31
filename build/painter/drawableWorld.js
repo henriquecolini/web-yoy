@@ -2,7 +2,7 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableWorld extends drawable_1.default {
-        constructor(painter, world) {
+        constructor(painter, world, hexClickListener) {
             super(painter);
             this.refreshZones = () => {
                 this.zones = [];
@@ -51,7 +51,11 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                         let h = w * drawableHex_1.default.PERFECT_H_TO_W;
                         let cx = (x * ((3 * w) / 4)) - (over / 2);
                         let cy = (y * h + (x % 2 === 1 ? (h / 2) : 0)) - (over / 2);
-                        this.hexes.push(new drawableHex_1.default(this.painter, hex.team ? hex.team.color : world_1.EMPTY_COLOUR, hex.team ? "rgba(0,0,0,0.2)" : world_1.EMPTY_BORDER_COLOUR, 0.8, cx, cy, w + over, h + over));
+                        this.hexes.push(new drawableHex_1.default(this.painter, hex.team ? hex.team.color : world_1.EMPTY_COLOUR, hex.team ? "rgba(0,0,0,0.2)" : world_1.EMPTY_BORDER_COLOUR, 0.8, cx, cy, w + over, h + over, hexClickListener ?
+                            () => {
+                                hexClickListener({ hex: hex, x: x, y: y });
+                            }
+                            : undefined));
                         if (hex.piece) {
                             this.pieces.push(new drawableImage_1.default(this.painter, "src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_" + hex.pieceLevel)) + ".png", cx, cy, w + over, w + over));
                         }

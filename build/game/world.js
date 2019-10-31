@@ -126,6 +126,15 @@ define(["require", "exports"], function (require, exports) {
             }
             return zones;
         }
+        static zoneOf(zones, hex) {
+            for (let i = 0; i < zones.length; i++) {
+                const zone = zones[i];
+                for (let j = 0; j < zone.hexes.length; j++)
+                    if (hex === zone.hexes[j].hex)
+                        return zone;
+            }
+            return undefined;
+        }
         onChange() {
             for (let i = 0; i < this.changeListeners.length; i++)
                 this.changeListeners[i]();

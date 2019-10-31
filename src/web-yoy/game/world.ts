@@ -176,6 +176,14 @@ export default class World {
 
 	}
 
+	public static zoneOf(zones: Zone[], hex: Hex): Zone {
+		for (let i = 0; i < zones.length; i++) {
+			const zone = zones[i];
+			for (let j = 0; j < zone.hexes.length; j++) if (hex === zone.hexes[j].hex) return zone;
+		}
+		return undefined;
+	}
+
 	private onChange() {
 		for (let i = 0; i < this.changeListeners.length; i++) this.changeListeners[i]();
 	}
