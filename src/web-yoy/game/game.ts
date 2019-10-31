@@ -79,7 +79,7 @@ export default class Game {
 	}
 
 	private handleTileClick = (hexXY: HexXY) => {
-		this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+		if (hexXY.hex.team) this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
 	}
 
 	private handleEmptyClick = () => {

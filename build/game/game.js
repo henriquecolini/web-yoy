@@ -24,7 +24,8 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.fpsCounter.innerHTML = Math.ceil(1 / deltaTime) + " fps";
             };
             this.handleTileClick = (hexXY) => {
-                this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+                if (hexXY.hex.team)
+                    this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
             };
             this.handleEmptyClick = () => {
                 this.drawableWorld.highlightedZone = undefined;
