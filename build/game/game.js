@@ -1,4 +1,4 @@
-define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld", "./levels"], function (require, exports, painter_1, world_1, drawableWorld_1, levels_1) {
+define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld", "../resources/levels"], function (require, exports, painter_1, world_1, drawableWorld_1, levels_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HEX_WIDTH = 5;

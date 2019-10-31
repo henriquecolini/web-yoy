@@ -2,7 +2,7 @@ import Painter from "../painter/painter";
 import DrawableHex from "../painter/drawableHex";
 import World, { EMPTY_COLOUR, HexXY } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
-import LEVELS from "./levels";
+import LEVELS from "../resources/levels";
 
 export const HEX_WIDTH = 5;
 

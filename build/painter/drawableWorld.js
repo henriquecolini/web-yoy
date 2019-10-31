@@ -1,4 +1,4 @@
-define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./drawableImage", "./drawableZone", "../game/game"], function (require, exports, drawableHex_1, world_1, drawable_1, drawableImage_1, drawableZone_1, game_1) {
+define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./drawableImage", "./drawableZone", "../game/game", "../resources/images"], function (require, exports, drawableHex_1, world_1, drawable_1, drawableImage_1, drawableZone_1, game_1, images_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableWorld extends drawable_1.default {
@@ -59,7 +59,7 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                             }
                             : undefined));
                         if (hex.piece) {
-                            this.pieces.push(new drawableImage_1.default(this.painter, "src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_" + hex.pieceLevel)) + ".png", cx, cy, w + over, w + over));
+                            this.pieces.push(new drawableImage_1.default(this.painter, images_1.default.piece(hex.piece, hex.pieceLevel), cx, cy, w + over, w + over));
                         }
                     }
                 }

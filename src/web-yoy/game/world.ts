@@ -1,4 +1,4 @@
-import { Level } from "./levels";
+import { Level } from "../resources/levels";
 
 export interface Zone {
 	team: Team,

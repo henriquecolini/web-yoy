@@ -5,6 +5,7 @@ import Painter from "./painter";
 import DrawableImage from "./drawableImage";
 import DrawableZone from "./drawableZone";
 import { HEX_WIDTH } from "../game/game";
+import Images from "../resources/images";
 
 export default class DrawableWorld extends Drawable {
 	
@@ -50,7 +51,7 @@ export default class DrawableWorld extends Drawable {
 						this.pieces.push(
 							new DrawableImage(
 								this.painter,
-								"src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_"+hex.pieceLevel)) + ".png",
+								Images.piece(hex.piece, hex.pieceLevel),
 								cx,
 								cy,
 								w+over,
