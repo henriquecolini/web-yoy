@@ -2,26 +2,20 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableZone extends drawable_1.default {
-        constructor(painter, world, zone, lineWidth, stroke, fill) {
+        constructor(painter, world, zone, lineWidth, stroke) {
             super(painter);
             this.draw = () => {
-                if (this._stroke || this._fill) {
-                    let ctx = this.painter.context;
-                    let u = this.painter.unit;
-                    ctx.strokeStyle = this._stroke;
-                    ctx.fillStyle = this._fill;
-                    ctx.lineWidth = this._lineWidth * u;
-                    ctx.lineCap = "round";
-                    for (let i = 0; i < this.lines.length; i++) {
-                        const p = this.lines[i];
-                        ctx.beginPath();
-                        ctx.moveTo(p.x1, p.y1);
-                        ctx.lineTo(p.x2, p.y2);
-                        if (this._stroke)
-                            ctx.stroke();
-                        if (this._fill)
-                            ctx.fill();
-                    }
+                let ctx = this.painter.context;
+                let u = this.painter.unit;
+                ctx.strokeStyle = this._stroke;
+                ctx.lineWidth = this._lineWidth * u;
+                ctx.lineCap = "round";
+                for (let i = 0; i < this.lines.length; i++) {
+                    const p = this.lines[i];
+                    ctx.beginPath();
+                    ctx.moveTo(p.x1, p.y1);
+                    ctx.lineTo(p.x2, p.y2);
+                    ctx.stroke();
                 }
             };
             this.recalculateLines = () => {
@@ -64,13 +58,11 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
             this.world = world;
             this._zone = zone;
             this._lineWidth = lineWidth;
-            this._fill = fill;
             this._stroke = stroke;
             this.recalculateLines();
         }
         get zone() { return this._zone; }
         get lineWidth() { return this._lineWidth; }
-        get fill() { return this._fill; }
         get stroke() { return this._stroke; }
         set zone(zone2) {
             this._zone = zone2;
@@ -79,10 +71,6 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
         }
         set lineWidth(lineWidth2) {
             this._lineWidth = lineWidth2;
-            this.painter.draw();
-        }
-        set fill(fill2) {
-            this._fill = fill2;
             this.painter.draw();
         }
         set stroke(stroke2) {

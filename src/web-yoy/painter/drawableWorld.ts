@@ -22,10 +22,11 @@ export default class DrawableWorld extends Drawable {
 				const hex = this.world.hexAt(x,y);
 				if (hex) {
 
+					let over = 0.08;
 					let w = 10;
 					let h = w * DrawableHex.PERFECT_H_TO_W;
-					let cx = x*(((3*w)/4)-0.0);
-					let cy = y*(h-0.0) + (x%2 === 1 ? ((h-0.0)/2) : 0);
+					let cx = (x*((3*w)/4)) - (over/2);
+					let cy = (y*h + (x%2 === 1 ? (h/2) : 0)) - (over/2);
 
 					this.hexes.push(
 						new DrawableHex(
@@ -34,8 +35,8 @@ export default class DrawableWorld extends Drawable {
 							0.8,
 							cx,
 							cy,
-							w,
-							h
+							w+over,
+							h+over
 						)
 					);
 					if (hex.piece) {						
@@ -45,8 +46,8 @@ export default class DrawableWorld extends Drawable {
 								"src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_"+hex.pieceLevel)) + ".png",
 								cx,
 								cy,
-								w,
-								w
+								w+over,
+								w+over
 							)
 						);
 					}
@@ -66,8 +67,7 @@ export default class DrawableWorld extends Drawable {
 				this.world,
 				zone,
 				0.5,
-				"#262626",
-				undefined
+				"#262626"
 			));
 		}
 	}
