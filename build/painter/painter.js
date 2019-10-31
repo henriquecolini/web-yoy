@@ -21,8 +21,8 @@ define(["require", "exports"], function (require, exports) {
                 this.draw();
             };
             this.handleClick = (evt) => {
-                let anything = false;
                 if (evt.button === 0) {
+                    let anything = false;
                     for (let i = 0; i < this.clickables.length; i++) {
                         const clickable = this.clickables[i];
                         let { x, y } = this.camera.screenToWorld(evt.x, evt.y);
@@ -32,9 +32,9 @@ define(["require", "exports"], function (require, exports) {
                             break;
                         }
                     }
+                    if (!anything && this._onEmptyClick)
+                        this._onEmptyClick();
                 }
-                if (!anything && this._onEmptyClick)
-                    this._onEmptyClick();
             };
             this.add = (drawable) => {
                 this.drawables.push(drawable);

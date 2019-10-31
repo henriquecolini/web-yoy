@@ -43,8 +43,8 @@ export default class Painter {
 	}
 
 	private handleClick = (evt: MouseEvent) => {
-		let anything = false;
 		if (evt.button === 0) {
+			let anything = false;
 			for (let i = 0; i < this.clickables.length; i++) {
 				const clickable = this.clickables[i];
 				let {x,y} = this.camera.screenToWorld(evt.x, evt.y);
@@ -54,8 +54,8 @@ export default class Painter {
 					break;
 				}
 			}
+			if (!anything && this._onEmptyClick) this._onEmptyClick();
 		}
-		if (!anything && this._onEmptyClick) this._onEmptyClick();
 	}
 
 	public add = (drawable: Drawable) => {

@@ -2,7 +2,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableZone extends drawable_1.default {
-        constructor(painter, world, zone, lineWidth, stroke) {
+        constructor(painter, world, zone, lineWidth, stroke, dashes) {
             super(painter);
             this.draw = () => {
                 let ctx = this.painter.context;
@@ -10,6 +10,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
                 ctx.strokeStyle = this._stroke;
                 ctx.lineWidth = this._lineWidth * u;
                 ctx.lineCap = "round";
+                ctx.setLineDash(this._dashes.map((v) => { return u * v; }));
                 for (let i = 0; i < this.lines.length; i++) {
                     const p = this.lines[i];
                     ctx.beginPath();
@@ -17,6 +18,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
                     ctx.lineTo(p.x2 * u, p.y2 * u);
                     ctx.stroke();
                 }
+                ctx.setLineDash([]);
             };
             this.recalculateLines = () => {
                 this.lines = [];
@@ -59,6 +61,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
             this._zone = zone;
             this._lineWidth = lineWidth;
             this._stroke = stroke;
+            this._dashes = dashes ? dashes : [];
             this.recalculateLines();
         }
         get zone() { return this._zone; }
@@ -76,6 +79,9 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
         set stroke(stroke2) {
             this._stroke = stroke2;
             this.painter.draw();
+        }
+        set dashes(dashes2) {
+            this._dashes = dashes2 ? dashes2 : [];
         }
     }
     exports.default = DrawableZone;

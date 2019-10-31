@@ -9,14 +9,16 @@ export default class DrawableZone extends Drawable {
 	private _zone: Zone;
 	private _lineWidth: number;
 	private _stroke: string;
+	private _dashes: number[];
 	private lines: { x1: number, y1: number, x2: number, y2: number}[];
 
-	constructor (painter: Painter, world: World, zone: Zone, lineWidth: number, stroke: string) {
+	constructor (painter: Painter, world: World, zone: Zone, lineWidth: number, stroke: string, dashes?: number[]) {
 		super(painter);
 		this.world = world;
 		this._zone = zone;
 		this._lineWidth = lineWidth;
 		this._stroke = stroke;
+		this._dashes = dashes ? dashes : [];
 		this.recalculateLines();
 	}
 
@@ -27,6 +29,7 @@ export default class DrawableZone extends Drawable {
 		ctx.strokeStyle = this._stroke;
 		ctx.lineWidth = this._lineWidth * u;
 		ctx.lineCap = "round";
+		ctx.setLineDash(this._dashes.map((v)=>{return u*v}));
 		
 		for (let i = 0; i < this.lines.length; i++) {
 			
@@ -38,6 +41,8 @@ export default class DrawableZone extends Drawable {
 			ctx.stroke();
 			
 		}
+
+		ctx.setLineDash([]);
 	}
 
 	private recalculateLines = () => {
@@ -103,6 +108,9 @@ export default class DrawableZone extends Drawable {
 	set stroke(stroke2: string) {
 		this._stroke = stroke2;
 		this.painter.draw();
+	}
+	set dashes(dashes2: number[]) {
+		this._dashes = dashes2 ? dashes2 : [];
 	}
 
 }

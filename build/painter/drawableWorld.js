@@ -67,7 +67,7 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
             this.refreshZones();
         }
         set highlightedZone(zone) {
-            this._highlightedZone = zone ? new drawableZone_1.default(this.painter, this.world, zone, 0.3, "#ffffff") : undefined;
+            this._highlightedZone = zone ? new drawableZone_1.default(this.painter, this.world, zone, 0.3, "#ffffff", [0.5, 0.5]) : undefined;
             this.painter.draw();
         }
     }
