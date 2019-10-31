@@ -1,4 +1,4 @@
-define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./drawableImage", "./drawableZone"], function (require, exports, drawableHex_1, world_1, drawable_1, drawableImage_1, drawableZone_1) {
+define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./drawableImage", "./drawableZone", "../game/game"], function (require, exports, drawableHex_1, world_1, drawable_1, drawableImage_1, drawableZone_1, game_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableWorld extends drawable_1.default {
@@ -9,7 +9,7 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                 let zones = this.world.findZones();
                 for (let i = 0; i < zones.length; i++) {
                     const zone = zones[i];
-                    this.zones.push(new drawableZone_1.default(this.painter, this.world, zone, 0.5, "#262626"));
+                    this.zones.push(new drawableZone_1.default(this.painter, this.world, zone, 0.25, "#262626"));
                 }
             };
             this.updateHexes = () => {
@@ -48,12 +48,12 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                 for (let y = 0; y < this.world.height; y++) {
                     const hex = this.world.hexAt(x, y);
                     if (hex) {
-                        let over = 0.08;
-                        let w = 10;
+                        let over = 0.04;
+                        let w = game_1.HEX_WIDTH;
                         let h = w * drawableHex_1.default.PERFECT_H_TO_W;
                         let cx = (x * ((3 * w) / 4)) - (over / 2);
                         let cy = (y * h + (x % 2 === 1 ? (h / 2) : 0)) - (over / 2);
-                        this.hexes.push(new drawableHex_1.default(this.painter, hex.team ? hex.team.color : world_1.EMPTY_COLOUR, hex.team ? "rgba(0,0,0,0.2)" : world_1.EMPTY_BORDER_COLOUR, 0.8, cx, cy, w + over, h + over, hexClickListener ?
+                        this.hexes.push(new drawableHex_1.default(this.painter, hex.team ? hex.team.color : world_1.EMPTY_COLOUR, hex.team ? "rgba(0,0,0,0.2)" : world_1.EMPTY_BORDER_COLOUR, 0.4, cx, cy, w + over, h + over, hexClickListener ?
                             () => {
                                 hexClickListener({ hex: hex, x: x, y: y });
                             }
@@ -69,6 +69,22 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
         set highlightedZone(zone) {
             this._highlightedZone = zone ? new drawableZone_1.default(this.painter, this.world, zone, 0.3, "#ffffff", [0.5, 0.5]) : undefined;
             this.painter.draw();
+        }
+        get midpoint() {
+            let averageX = 0;
+            let averageY = 0;
+            let inc = 0;
+            for (let x = 0; x < this.world.width; x++) {
+                for (let y = 0; y < this.world.height; y++) {
+                    const draw = this.hexes[inc];
+                    if (draw) {
+                        averageX += draw.x + (draw.w / 2);
+                        averageY += draw.y + (draw.h / 2);
+                        inc++;
+                    }
+                }
+            }
+            return { x: averageX / inc, y: averageY / inc };
         }
     }
     exports.default = DrawableWorld;

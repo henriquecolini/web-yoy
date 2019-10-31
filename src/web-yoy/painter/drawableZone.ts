@@ -2,6 +2,7 @@ import World, { Zone } from "../game/world";
 import Drawable from "./drawable";
 import Painter from "./painter";
 import DrawableHex from "./drawableHex";
+import { HEX_WIDTH } from "../game/game";
 
 export default class DrawableZone extends Drawable {
 
@@ -56,7 +57,7 @@ export default class DrawableZone extends Drawable {
 			
 			if (hex) {
 
-				let w = 10;
+				let w = HEX_WIDTH;
 				let h = w * DrawableHex.PERFECT_H_TO_W;
 				let cx = x*((3*w)/4);
 				let cy = y*h + (x%2 === 1 ? (h/2) : 0);

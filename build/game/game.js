@@ -1,6 +1,7 @@
 define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld", "./levels"], function (require, exports, painter_1, world_1, drawableWorld_1, levels_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.HEX_WIDTH = 5;
     class Game {
         constructor() {
             this.keys = { w: false, a: false, s: false, d: false };
@@ -86,6 +87,9 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this.painter = new painter_1.default(document.getElementById("canvas"));
             this.world = new world_1.default(levels_1.default.medium[0]);
             this.drawableWorld = new drawableWorld_1.default(this.painter, this.world, this.handleTileClick);
+            let camPos = this.drawableWorld.midpoint;
+            this.painter.camera.x = camPos.x;
+            this.painter.camera.y = camPos.y;
             this.painter.add(this.drawableWorld);
             this.painter.onEmptyClick = this.handleEmptyClick;
             this.world.addChangeListener(this.drawableWorld.updateHexes);

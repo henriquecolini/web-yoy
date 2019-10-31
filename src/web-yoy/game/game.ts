@@ -4,6 +4,8 @@ import World, { EMPTY_COLOUR, HexXY } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
 import LEVELS from "./levels";
 
+export const HEX_WIDTH = 5;
+
 export default class Game {
 
 	private painter: Painter;
@@ -23,12 +25,16 @@ export default class Game {
 		this.painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
 		this.world = new World(LEVELS.medium[0]);
 		this.drawableWorld = new DrawableWorld(this.painter, this.world, this.handleTileClick);
+
+		let camPos = this.drawableWorld.midpoint;
+		this.painter.camera.x = camPos.x;
+		this.painter.camera.y = camPos.y;
 				
 		this.painter.add(this.drawableWorld);
 		this.painter.onEmptyClick = this.handleEmptyClick;
 		this.world.addChangeListener(this.drawableWorld.updateHexes);
 
-		this.fpsCounter = document.getElementById("fps");
+		this.fpsCounter = document.getElementById("fps");		
 
 		document.addEventListener("keydown", this.handleKeyDown);
 		document.addEventListener("keyup", this.handleKeyUp);

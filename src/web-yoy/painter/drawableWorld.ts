@@ -4,6 +4,7 @@ import Drawable from "./drawable";
 import Painter from "./painter";
 import DrawableImage from "./drawableImage";
 import DrawableZone from "./drawableZone";
+import { HEX_WIDTH } from "../game/game";
 
 export default class DrawableWorld extends Drawable {
 	
@@ -23,8 +24,8 @@ export default class DrawableWorld extends Drawable {
 				const hex = this.world.hexAt(x,y);
 				if (hex) {
 
-					let over = 0.08;
-					let w = 10;
+					let over = 0.04;
+					let w = HEX_WIDTH;
 					let h = w * DrawableHex.PERFECT_H_TO_W;
 					let cx = (x*((3*w)/4)) - (over/2);
 					let cy = (y*h + (x%2 === 1 ? (h/2) : 0)) - (over/2);
@@ -33,7 +34,7 @@ export default class DrawableWorld extends Drawable {
 						new DrawableHex(
 							this.painter,
 							hex.team ? hex.team.color : EMPTY_COLOUR, hex.team ? "rgba(0,0,0,0.2)" : EMPTY_BORDER_COLOUR,
-							0.8,
+							0.4,
 							cx,
 							cy,
 							w+over,
@@ -72,7 +73,7 @@ export default class DrawableWorld extends Drawable {
 				this.painter,
 				this.world,
 				zone,
-				0.5,
+				0.25,
 				"#262626"
 			));
 		}
@@ -126,6 +127,27 @@ export default class DrawableWorld extends Drawable {
 			[0.5,0.5]
 		) : undefined;
 		this.painter.draw();
+	}
+
+	get midpoint(): {x: number, y: number} {
+
+		let averageX = 0;
+		let averageY = 0;
+		let inc = 0;
+
+		for (let x = 0; x < this.world.width; x++) {
+			for (let y = 0; y < this.world.height; y++) {
+				const draw = this.hexes[inc];
+				if (draw) {
+					averageX += draw.x + (draw.w/2);
+					averageY += draw.y + (draw.h/2);
+					inc++;
+				}
+			}
+		}
+
+		return {x: averageX/inc, y: averageY/inc};
+
 	}
 
 }

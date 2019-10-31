@@ -1,4 +1,4 @@
-define(["require", "exports", "./drawable", "./drawableHex"], function (require, exports, drawable_1, drawableHex_1) {
+define(["require", "exports", "./drawable", "./drawableHex", "../game/game"], function (require, exports, drawable_1, drawableHex_1, game_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class DrawableZone extends drawable_1.default {
@@ -28,7 +28,7 @@ define(["require", "exports", "./drawable", "./drawableHex"], function (require,
                     const x = hexXY.x;
                     const y = hexXY.y;
                     if (hex) {
-                        let w = 10;
+                        let w = game_1.HEX_WIDTH;
                         let h = w * drawableHex_1.default.PERFECT_H_TO_W;
                         let cx = x * ((3 * w) / 4);
                         let cy = y * h + (x % 2 === 1 ? (h / 2) : 0);
