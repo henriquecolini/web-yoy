@@ -25,16 +25,16 @@ export const EMPTY_COLOUR = "#82b551";
 export const EMPTY_BORDER_COLOUR = "#88bf54";
 
 export const STD_COLOURS = [
+	"#4fd2db",
+	"#f79a36",
 	"#d45d5d",
-	"#5da4d4",
 	"#459647",
 	"#575cb5",
 	"#c246b5",
 	"#d1c73f",
 	"#40cf77",
 	"#7d391a",
-	"#753c7a",
-	"#8d9963"
+	"#f26a68"
 ];
 
 export default class World {
