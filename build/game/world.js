@@ -1,7 +1,8 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.EMPTY_COLOUR = "#616161";
+    exports.EMPTY_COLOUR = "#82b551";
+    exports.EMPTY_BORDER_COLOUR = "#88bf54";
     exports.STD_COLOURS = [
         "#d45d5d",
         "#5da4d4",
@@ -70,25 +71,26 @@ define(["require", "exports"], function (require, exports) {
             return this._world[x] ? this._world[x][y] : undefined;
         }
         neighbours(x, y) {
+            let zig = (2 * (x % 2)) - 1;
             let list = [];
-            let n1 = this.hexAt(x, y - 1);
-            let n2 = this.hexAt(x - 1, y);
-            let n3 = this.hexAt(x + 1, y);
-            let n4 = this.hexAt(x, y + 1);
-            let n5 = this.hexAt(x - 1, y + 1);
-            let n6 = this.hexAt(x + 1, y + 1);
+            let n0 = this.hexAt(x, y - 1);
+            let n1 = this.hexAt(x - 1, y);
+            let n2 = this.hexAt(x + 1, y);
+            let n3 = this.hexAt(x, y + 1);
+            let n4 = this.hexAt(x - 1, y + zig);
+            let n5 = this.hexAt(x + 1, y + zig);
+            if (n0)
+                list.push({ hex: n0, xOff: 0, yOff: -1 });
             if (n1)
-                list.push({ hex: n1, xOff: 0, yOff: -1 });
+                list.push({ hex: n1, xOff: -1, yOff: 0 });
             if (n2)
-                list.push({ hex: n2, xOff: -1, yOff: 0 });
+                list.push({ hex: n2, xOff: 1, yOff: 0 });
             if (n3)
-                list.push({ hex: n3, xOff: 1, yOff: 0 });
+                list.push({ hex: n3, xOff: 0, yOff: 1 });
             if (n4)
-                list.push({ hex: n4, xOff: 0, yOff: 1 });
+                list.push({ hex: n4, xOff: -1, yOff: zig });
             if (n5)
-                list.push({ hex: n5, xOff: -1, yOff: 1 });
-            if (n6)
-                list.push({ hex: n6, xOff: 1, yOff: 1 });
+                list.push({ hex: n5, xOff: 1, yOff: zig });
             return list;
         }
         findConnected(x, y) {
