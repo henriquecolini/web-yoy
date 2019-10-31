@@ -1,4 +1,4 @@
-define(["require", "exports", "./drawableRect"], function (require, exports, drawableRect_1) {
+define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class Painter {
@@ -21,14 +21,20 @@ define(["require", "exports", "./drawableRect"], function (require, exports, dra
                 this.draw();
             };
             this.handleClick = (evt) => {
+                let anything = false;
                 if (evt.button === 0) {
                     for (let i = 0; i < this.clickables.length; i++) {
                         const clickable = this.clickables[i];
                         let { x, y } = this.camera.screenToWorld(evt.x, evt.y);
-                        if (clickable.isHovering(x, y))
+                        if (clickable.isHovering(x, y)) {
                             clickable.onClick();
+                            anything = true;
+                            break;
+                        }
                     }
                 }
+                if (!anything && this._onEmptyClick)
+                    this._onEmptyClick();
             };
             this.add = (drawable) => {
                 this.drawables.push(drawable);
@@ -53,12 +59,14 @@ define(["require", "exports", "./drawableRect"], function (require, exports, dra
             window.addEventListener("resize", this.updateSize);
             this.updateSize();
             canvas.addEventListener("mousedown", this.handleClick);
-            this.add(new drawableRect_1.default(this, "red", -0.5, -0.5, 1, 1));
         }
         get unit() { return this._unit; }
         get canvas() { return this._canvas; }
         get context() { return this._context; }
         get camera() { return this._camera; }
+        set onEmptyClick(fun) {
+            this._onEmptyClick = fun;
+        }
     }
     exports.default = Painter;
     class Camera {

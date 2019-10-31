@@ -109,7 +109,7 @@ define(["require", "exports"], function (require, exports) {
                 }
             };
             sub(x, y);
-            return connected;
+            return { hexes: connected, team: targetTeam };
         }
         findZones() {
             let found = [];
@@ -118,9 +118,9 @@ define(["require", "exports"], function (require, exports) {
                 for (let y = 0; y < this._height; y++) {
                     const hex = this.hexAt(x, y);
                     if (hex && found.indexOf(hex) < 0) {
-                        let hexXYs = this.findConnected(x, y);
-                        found.push(...(hexXYs.map((hexXY) => { return hexXY.hex; })));
-                        zones.push({ hexes: hexXYs, team: hex.team });
+                        let zone = this.findConnected(x, y);
+                        found.push(...(zone.hexes.map((hexXY) => { return hexXY.hex; })));
+                        zones.push(zone);
                     }
                 }
             }

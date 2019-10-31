@@ -38,6 +38,8 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                     this.pieces[i].draw();
                 for (let i = 0; i < this.zones.length; i++)
                     this.zones[i].draw();
+                if (this._highlightedZone)
+                    this._highlightedZone.draw();
             };
             this.world = world;
             this.hexes = [];
@@ -63,6 +65,10 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                 }
             }
             this.refreshZones();
+        }
+        set highlightedZone(zone) {
+            this._highlightedZone = zone ? new drawableZone_1.default(this.painter, this.world, zone, 0.3, "#ffffff") : undefined;
+            this.painter.draw();
         }
     }
     exports.default = DrawableWorld;

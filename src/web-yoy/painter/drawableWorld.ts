@@ -1,5 +1,5 @@
 import DrawableHex from "./drawableHex";
-import World, { EMPTY_COLOUR, EMPTY_BORDER_COLOUR, HexXY } from "game/world";
+import World, { EMPTY_COLOUR, EMPTY_BORDER_COLOUR, HexXY, Zone } from "game/world";
 import Drawable from "./drawable";
 import Painter from "./painter";
 import DrawableImage from "./drawableImage";
@@ -11,6 +11,7 @@ export default class DrawableWorld extends Drawable {
 	private hexes: DrawableHex[];
 	private zones: DrawableZone[];
 	private pieces: DrawableImage[];
+	private _highlightedZone: DrawableZone;
 
 	constructor(painter: Painter, world: World, hexClickListener?: (hexXY: HexXY)=>void) {
 		super(painter);
@@ -112,6 +113,18 @@ export default class DrawableWorld extends Drawable {
 		for (let i = 0; i < this.hexes.length; i++) this.hexes[i].draw();
 		for (let i = 0; i < this.pieces.length; i++) this.pieces[i].draw();
 		for (let i = 0; i < this.zones.length; i++) this.zones[i].draw();
+		if (this._highlightedZone) this._highlightedZone.draw();
+	}
+
+	set highlightedZone(zone: Zone) {
+		this._highlightedZone = zone? new DrawableZone(
+			this.painter,
+			this.world,
+			zone,
+			0.3,
+			"#ffffff"
+		) : undefined;
+		this.painter.draw();
 	}
 
 }

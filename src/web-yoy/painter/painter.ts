@@ -11,6 +11,7 @@ export default class Painter {
 
 	private drawables: Drawable[];
 	private clickables: Clickable[];
+	private _onEmptyClick: ()=>void;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this._canvas = canvas;
@@ -20,7 +21,6 @@ export default class Painter {
 		window.addEventListener("resize", this.updateSize);
 		this.updateSize();
 		canvas.addEventListener("mousedown", this.handleClick);
-		this.add(new DrawableRect(this, "red", -0.5, -0.5, 1, 1));
 	}
 
 	public draw = () => {
@@ -43,13 +43,19 @@ export default class Painter {
 	}
 
 	private handleClick = (evt: MouseEvent) => {
+		let anything = false;
 		if (evt.button === 0) {
 			for (let i = 0; i < this.clickables.length; i++) {
 				const clickable = this.clickables[i];
 				let {x,y} = this.camera.screenToWorld(evt.x, evt.y);
-				if (clickable.isHovering(x,y)) clickable.onClick();
+				if (clickable.isHovering(x,y)) {
+					clickable.onClick();
+					anything = true;
+					break;
+				}
 			}
 		}
+		if (!anything && this._onEmptyClick) this._onEmptyClick();
 	}
 
 	public add = (drawable: Drawable) => {
@@ -76,6 +82,10 @@ export default class Painter {
 	get canvas() { return this._canvas; }
 	get context() { return this._context; }	
 	get camera() { return this._camera; }
+
+	set onEmptyClick(fun: ()=>void) {
+		this._onEmptyClick = fun;
+	}
 
 }
 

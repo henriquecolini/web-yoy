@@ -25,6 +25,7 @@ export default class Game {
 		this.drawableWorld = new DrawableWorld(this.painter, this.world, this.handleTileClick);
 				
 		this.painter.add(this.drawableWorld);
+		this.painter.onEmptyClick = this.handleEmptyClick;
 		this.world.addChangeListener(this.drawableWorld.updateHexes);
 
 		this.fpsCounter = document.getElementById("fps");
@@ -72,7 +73,11 @@ export default class Game {
 	}
 
 	private handleTileClick = (hexXY: HexXY) => {
-		
+		this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+	}
+
+	private handleEmptyClick = () => {
+		this.drawableWorld.highlightedZone = undefined;
 	}
 
 	private handleKeyDown = (evt: KeyboardEvent) => {

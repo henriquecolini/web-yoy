@@ -138,7 +138,7 @@ export default class World {
 		return list;
 	}
 
-	public findConnected(x: number, y: number): HexXY[] {
+	public findConnected(x: number, y: number): Zone {
 		let targetTeam = this.hexAt(x,y).team;
 		let connected = [] as HexXY[];
 		let ignore = [] as Hex[];
@@ -153,7 +153,7 @@ export default class World {
 			}
 		}
 		sub(x,y);
-		return connected;
+		return {hexes: connected, team: targetTeam};
 	}
 
 	public findZones(): Zone[] {
@@ -165,9 +165,9 @@ export default class World {
 			for (let y = 0; y < this._height; y++) {
 				const hex = this.hexAt(x,y);
 				if(hex && found.indexOf(hex) < 0) {
-					let hexXYs = this.findConnected(x,y);
-					found.push(...(hexXYs.map((hexXY)=>{return hexXY.hex})));
-					zones.push({hexes: hexXYs, team: hex.team});
+					let zone = this.findConnected(x,y);
+					found.push(...(zone.hexes.map((hexXY)=>{return hexXY.hex})));
+					zones.push(zone);
 				}
 			}
 		}

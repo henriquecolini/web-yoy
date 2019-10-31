@@ -23,6 +23,10 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.fpsCounter.innerHTML = Math.ceil(1 / deltaTime) + " fps";
             };
             this.handleTileClick = (hexXY) => {
+                this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+            };
+            this.handleEmptyClick = () => {
+                this.drawableWorld.highlightedZone = undefined;
             };
             this.handleKeyDown = (evt) => {
                 if (!evt.repeat) {
@@ -83,6 +87,7 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this.world = new world_1.default(levels_1.default.medium[0]);
             this.drawableWorld = new drawableWorld_1.default(this.painter, this.world, this.handleTileClick);
             this.painter.add(this.drawableWorld);
+            this.painter.onEmptyClick = this.handleEmptyClick;
             this.world.addChangeListener(this.drawableWorld.updateHexes);
             this.fpsCounter = document.getElementById("fps");
             document.addEventListener("keydown", this.handleKeyDown);
