@@ -56,9 +56,7 @@ export default class DrawableWorld extends Drawable {
 							"#000"
 						)
 					);
-					if (hex.piece) {
-						console.log(hex.piece);
-						
+					if (hex.piece) {						
 						this.pieces.push(
 							new DrawableImage(
 								this.painter,
@@ -66,7 +64,7 @@ export default class DrawableWorld extends Drawable {
 								cx,
 								cy,
 								w,
-								w // not wrong
+								w
 							)
 						);
 					}

@@ -47,7 +47,6 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                             !n5 || (n5.team != hex.team),
                         ], 0.4, "#000"));
                         if (hex.piece) {
-                            console.log(hex.piece);
                             this.pieces.push(new drawableImage_1.default(this.painter, "src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_" + hex.pieceLevel)) + ".png", cx, cy, w, w));
                         }
                     }

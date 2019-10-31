@@ -1,9 +1,20 @@
 import { Level } from "./levels";
 
+export interface Zone {
+	team: Team,
+	hexes: HexXY[]
+}
+
 export interface Hex {
 	team: Team,
 	piece: "capital"|"farm"|"forest"|"tower"|"unit",
 	pieceLevel: number
+}
+
+export interface HexXY {
+	hex: Hex,
+	x: number,
+	y: number
 }
 
 export interface Team {
@@ -109,7 +120,7 @@ export default class World {
 		return this._world[x] ? this._world[x][y] : undefined;
 	}
 
-	public neighbours(x: number, y: number) {
+	public neighbours(x: number, y: number): HexXY[] {
 		let zig = (2*(x%2))-1;
 		let list = [];
 		let n0 = this.hexAt(x,y-1);
@@ -118,28 +129,55 @@ export default class World {
 		let n3 = this.hexAt(x,y+1);
 		let n4 = this.hexAt(x-1,y+zig);
 		let n5 = this.hexAt(x+1,y+zig);
-		if(n0) list.push({hex: n0, xOff: 0, yOff: -1});
-		if(n1) list.push({hex: n1, xOff: -1, yOff: 0});
-		if(n2) list.push({hex: n2, xOff: 1, yOff: 0});
-		if(n3) list.push({hex: n3, xOff: 0, yOff: 1});
-		if(n4) list.push({hex: n4, xOff: -1, yOff: zig});
-		if(n5) list.push({hex: n5, xOff: 1, yOff: zig});
+		if(n0) list.push({hex: n0, x: x, y: y-1});
+		if(n1) list.push({hex: n1, x: x-1, y: y});
+		if(n2) list.push({hex: n2, x: x+1, y: y});
+		if(n3) list.push({hex: n3, x: x, y: y+1});
+		if(n4) list.push({hex: n4, x: x-1, y: y+zig});
+		if(n5) list.push({hex: n5, x: x+1, y: y+zig});
 		return list;
 	}
 
-	public findConnected(x: number, y: number): Hex[] {
+	public findConnected(x: number, y: number): HexXY[] {
 		let targetTeam = this.hexAt(x,y).team;
-		let visited = [] as Hex[];
+		let connected = [] as HexXY[];
+		let ignore = [] as Hex[];
 		const sub = (sx: number, sy: number) => {
-			visited.push(this.hexAt(sx,sy));
+			let hex = this.hexAt(sx,sy);
+			connected.push({hex: hex, x: sx, y: sy});
+			ignore.push(hex);
 			let neis = this.neighbours(sx,sy);
 			for (let i = 0; i < neis.length; i++) {
 				const nei = neis[i];
-				if ((nei.hex.team === targetTeam) && (visited.indexOf(nei.hex) < 0)) sub(sx+nei.xOff, sy+nei.yOff);
+				if ((nei.hex.team === targetTeam) && (ignore.indexOf(nei.hex) < 0)) sub(nei.x, nei.y);
 			}
 		}
 		sub(x,y);
-		return visited;
+		return connected;
+	}
+
+	public findZones(): Zone[] {
+
+		let found = [] as Hex[];
+		let zones = [] as Zone[];
+
+		for (let x = 0; x < this._width; x++) {
+			for (let y = 0; y < this._height; y++) {
+				const hex = this.hexAt(x,y);
+				if(hex && found.indexOf(hex) < 0) {
+					let hexXYs = this.findConnected(x,y);
+					found.push(...(hexXYs.map((hexXY)=>{return hexXY.hex})));
+					zones.push({hexes: hexXYs, team: hex.team});
+				}
+			}
+		}
+
+		return zones;
+
+	}
+
+	private onChange() {
+		for (let i = 0; i < this.changeListeners.length; i++) this.changeListeners[i]();
 	}
 
 	public addChangeListener(listener: ()=>void) {

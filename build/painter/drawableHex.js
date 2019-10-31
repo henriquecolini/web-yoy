@@ -11,12 +11,7 @@ define(["require", "exports", "./drawableBounds"], function (require, exports, d
                 const y = this.y;
                 const w = this.w;
                 const h = this.h;
-                const p = [{ x: u * (x + (w / 4)), y: u * y },
-                    { x: u * (x + ((3 * w) / 4)), y: u * y },
-                    { x: u * (x + w), y: u * (y + (h / 2)) },
-                    { x: u * (x + ((3 * w) / 4)), y: u * (y + h) },
-                    { x: u * (x + (w / 4)), y: u * (y + h) },
-                    { x: u * x, y: u * (y + (h / 2)) }];
+                const p = DrawableHex.points(u, x, y, w, h);
                 ctx.strokeStyle = this._stroke;
                 ctx.lineWidth = this._lineWidth * u;
                 ctx.fillStyle = this._fill;
@@ -56,6 +51,14 @@ define(["require", "exports", "./drawableBounds"], function (require, exports, d
                 this._outlineColor = outlineColor;
                 this._outlineWidth = outlineWidth;
             }
+        }
+        static points(u, x, y, w, h) {
+            return [{ x: u * (x + (w / 4)), y: u * y },
+                { x: u * (x + ((3 * w) / 4)), y: u * y },
+                { x: u * (x + w), y: u * (y + (h / 2)) },
+                { x: u * (x + ((3 * w) / 4)), y: u * (y + h) },
+                { x: u * (x + (w / 4)), y: u * (y + h) },
+                { x: u * x, y: u * (y + (h / 2)) }];
         }
         get fill() { return this._fill; }
         get stroke() { return this._stroke; }

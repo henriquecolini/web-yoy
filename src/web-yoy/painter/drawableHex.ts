@@ -1,6 +1,8 @@
 import Painter from "./painter";
 import DrawableBounds from "./drawableBounds";
 
+interface Point {x: number, y: number}
+
 export default class DrawableHex extends DrawableBounds {
 	
 	public static PERFECT_W_TO_H = (2*Math.sqrt(3))/3;
@@ -39,6 +41,15 @@ export default class DrawableHex extends DrawableBounds {
 
 	}
 
+	public static points(u: number, x: number, y: number, w: number, h: number): [Point, Point, Point, Point, Point, Point] {
+		return [{x: u*(x+(w/4)), y: u*y},
+			{x: u*(x+((3*w)/4)), y: u*y},
+			{x: u*(x+w), y: u*(y+(h/2))},
+			{x: u*(x+((3*w)/4)), y: u*(y+h)},
+			{x: u*(x+(w/4)), y: u*(y+h)},
+			{x: u*x, y: u*(y+(h/2))}];
+	}
+
 	public draw = () => {
 		
 		const ctx = this.painter.context;
@@ -48,12 +59,7 @@ export default class DrawableHex extends DrawableBounds {
 		const w = this.w;
 		const h = this.h;
 
-		const p = [{x: u*(x+(w/4)), y: u*y},
-				   {x: u*(x+((3*w)/4)), y: u*y},
-				   {x: u*(x+w), y: u*(y+(h/2))},
-				   {x: u*(x+((3*w)/4)), y: u*(y+h)},
-				   {x: u*(x+(w/4)), y: u*(y+h)},
-				   {x: u*x, y: u*(y+(h/2))}];
+		const p = DrawableHex.points(u,x,y,w,h);
 		
 		ctx.strokeStyle = this._stroke;
 		ctx.lineWidth = this._lineWidth*u;
