@@ -1,6 +1,6 @@
 import Painter from "../painter/painter";
 import DrawableHex from "../painter/drawableHex";
-import World, { EMPTY_COLOUR, HexXY } from "./world";
+import World, { EMPTY_COLOUR, HexXY, Team } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
 import LEVELS from "../resources/levels";
 
@@ -20,6 +20,10 @@ export default class Game {
 	private camSpeed = 40;
 	private _panning = false;
 
+	private currentTeamIndex = -1;
+	private currentTeam: Team = undefined;
+	private teamIndicator: HTMLElement;
+
 	constructor() {
 
 		this.painter = new Painter(document.getElementById("canvas") as HTMLCanvasElement);
@@ -35,6 +39,11 @@ export default class Game {
 		this.world.addChangeListener(this.drawableWorld.updateHexes);
 
 		this.fpsCounter = document.getElementById("fps");		
+		this.teamIndicator = document.getElementById("team_indicator");
+
+		this.nextTurn();
+
+		document.getElementById("next_turn").addEventListener("click", this.nextTurn);
 
 		document.addEventListener("keydown", this.handleKeyDown);
 		document.addEventListener("keyup", this.handleKeyUp);
@@ -78,8 +87,16 @@ export default class Game {
 
 	}
 
+	private nextTurn = () => {
+		this.drawableWorld.highlightedZone = undefined;
+		this.currentTeamIndex++;
+		this.currentTeamIndex %= this.world.teams.length;
+		this.currentTeam = this.world.teams[this.currentTeamIndex];
+		this.teamIndicator.style.background = this.currentTeam.color;
+	}
+
 	private handleTileClick = (hexXY: HexXY) => {
-		if (hexXY.hex.team) this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+		if (hexXY.hex.team === this.currentTeam) this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
 	}
 
 	private handleEmptyClick = () => {

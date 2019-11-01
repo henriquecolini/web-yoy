@@ -22,4 +22,18 @@ body {
   font-family: sans-serif;
 }
 
+#next_turn_wrapper {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+}
+#next_turn_wrapper #team_indicator {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+}
+#next_turn_wrapper button {
+  width: 100%;
+}
+
 /*# sourceMappingURL=main.css.map */

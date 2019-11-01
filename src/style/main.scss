@@ -21,3 +21,17 @@ body {
 	color: white;
 	font-family: sans-serif;
 }
+
+#next_turn_wrapper {
+	position: fixed;
+	bottom: 5px;
+	right: 5px;
+	#team_indicator {
+		width: 30px;
+		height: 30px;
+		display: inline-block;
+	}
+	button {
+		width: 100%;
+	}
+}

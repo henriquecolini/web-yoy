@@ -123,9 +123,9 @@ export default class DrawableWorld extends Drawable {
 			this.painter,
 			this.world,
 			zone,
-			0.3,
+			0.15,
 			"#ffffff",
-			[0.5,0.5]
+			[0.25,0.25]
 		) : undefined;
 		this.painter.draw();
 	}

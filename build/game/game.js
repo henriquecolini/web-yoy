@@ -9,6 +9,8 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this.pan = { x: 0, y: 0, cx: 0, cy: 0 };
             this.camSpeed = 40;
             this._panning = false;
+            this.currentTeamIndex = -1;
+            this.currentTeam = undefined;
             this.update = (deltaTime) => {
                 let camMove = { x: 0, y: 0 };
                 camMove.x += this.keys.a ? -1 : 0;
@@ -23,8 +25,15 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.painter.camera.y += (camMove.y * this.camSpeed) * deltaTime;
                 this.fpsCounter.innerHTML = Math.ceil(1 / deltaTime) + " fps";
             };
+            this.nextTurn = () => {
+                this.drawableWorld.highlightedZone = undefined;
+                this.currentTeamIndex++;
+                this.currentTeamIndex %= this.world.teams.length;
+                this.currentTeam = this.world.teams[this.currentTeamIndex];
+                this.teamIndicator.style.background = this.currentTeam.color;
+            };
             this.handleTileClick = (hexXY) => {
-                if (hexXY.hex.team)
+                if (hexXY.hex.team === this.currentTeam)
                     this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
             };
             this.handleEmptyClick = () => {
@@ -95,6 +104,9 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this.painter.onEmptyClick = this.handleEmptyClick;
             this.world.addChangeListener(this.drawableWorld.updateHexes);
             this.fpsCounter = document.getElementById("fps");
+            this.teamIndicator = document.getElementById("team_indicator");
+            this.nextTurn();
+            document.getElementById("next_turn").addEventListener("click", this.nextTurn);
             document.addEventListener("keydown", this.handleKeyDown);
             document.addEventListener("keyup", this.handleKeyUp);
             document.addEventListener("wheel", this.handleWheel);
