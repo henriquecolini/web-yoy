@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<link href="https://fonts.googleapis.com/css?family=Acme|Open+Sans&display=swap" rel="stylesheet">
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 	<link rel="stylesheet" href="build/style/main.css">
 	<script data-main="build/main" src="require.js"></script>
@@ -10,11 +11,14 @@
 	<body>
 		<span id="fps"></span>
 		<canvas id="canvas"></canvas>
-		<div id="next_turn_wrapper">
-			<div>
-				Turn of <span id="team_indicator"></span>
+		<div id="indicator_wrapper">
+			<div id="team_indicator">
+				<h1>Current</h1>
+				<h1>Turn</h1>
 			</div>
-			<button id="next_turn">>></button>			
+		</div>
+		<div id="next_turn_wrapper">
+			<button id="next_turn">> ></button>			
 		</div>
 	</body>
 </html>
