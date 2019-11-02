@@ -11,6 +11,7 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this._panning = false;
             this.currentTeamIndex = -1;
             this.currentTeam = undefined;
+            this.selectedZone = undefined;
             this.update = (deltaTime) => {
                 let camMove = { x: 0, y: 0 };
                 camMove.x += this.keys.a ? -1 : 0;
@@ -33,11 +34,34 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.teamIndicator.style.background = this.currentTeam.color;
             };
             this.handleTileClick = (hexXY) => {
-                if (hexXY.hex.team === this.currentTeam)
-                    this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+                this.moneyWrapper.className = "hidden";
+                if (hexXY.hex.team === this.currentTeam) {
+                    let zone = this.world.findConnected(hexXY.x, hexXY.y);
+                    let capitalHex = undefined;
+                    for (let i = 0; i < zone.hexes.length; i++) {
+                        const hex = zone.hexes[i];
+                        if (hex.hex.piece === "capital") {
+                            capitalHex = hex;
+                            break;
+                        }
+                    }
+                    if (capitalHex) {
+                        this.selectedZone = zone;
+                        this.drawableWorld.highlightedZone = this.selectedZone;
+                        let capital = this.world.getCapital(capitalHex.x, capitalHex.y);
+                        if (capital) {
+                            let profit = world_1.default.profit(zone);
+                            this.moneyDisplay.innerHTML = "" + capital.money;
+                            this.profitDisplay.innerHTML = "" + (profit >= 0 ? '+' : '') + (profit);
+                            this.profitDisplay.className = (profit > 0) ? "" : "negative";
+                            this.moneyWrapper.className = "";
+                        }
+                    }
+                }
             };
             this.handleEmptyClick = () => {
                 this.drawableWorld.highlightedZone = undefined;
+                this.moneyWrapper.className = "hidden";
             };
             this.handleKeyDown = (evt) => {
                 if (!evt.repeat) {
@@ -105,6 +129,9 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this.world.addChangeListener(this.drawableWorld.updateHexes);
             this.fpsCounter = document.getElementById("fps");
             this.teamIndicator = document.getElementById("team_indicator");
+            this.moneyWrapper = document.getElementById("money_wrapper");
+            this.moneyDisplay = document.getElementById("money");
+            this.profitDisplay = document.getElementById("profit");
             this.nextTurn();
             document.getElementById("next_turn").addEventListener("click", this.nextTurn);
             document.addEventListener("keydown", this.handleKeyDown);

@@ -67,6 +67,16 @@ define(["require", "exports"], function (require, exports) {
             }
             this._height = height;
         }
+        getCapital(x, y) {
+            if (this.hexAt(x, y) && this.hexAt(x, y).piece === "capital") {
+                for (let i = 0; i < this._capitals.length; i++) {
+                    const cap = this._capitals[i];
+                    if (cap.x == x && cap.y == y)
+                        return cap;
+                }
+            }
+            return undefined;
+        }
         hexAt(x, y) {
             return this._world[x] ? this._world[x][y] : undefined;
         }
@@ -134,6 +144,9 @@ define(["require", "exports"], function (require, exports) {
                         return zone;
             }
             return undefined;
+        }
+        static profit(zone) {
+            return 0;
         }
         onChange() {
             for (let i = 0; i < this.changeListeners.length; i++)

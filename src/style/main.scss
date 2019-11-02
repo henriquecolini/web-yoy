@@ -19,6 +19,13 @@ body {
 	font-family: "Acme", sans-serif;
 }
 
+#money_wrapper {
+	transition: transform 0.4s;
+	&.hidden {
+		transform: translateX(-100%);
+	}
+}
+
 #fps {
 	position: fixed;
 	top: 5px;

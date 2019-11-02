@@ -1,6 +1,6 @@
 import Painter from "../painter/painter";
 import DrawableHex from "../painter/drawableHex";
-import World, { EMPTY_COLOUR, HexXY, Team } from "./world";
+import World, { EMPTY_COLOUR, HexXY, Team, Zone } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
 import LEVELS from "../resources/levels";
 
@@ -22,7 +22,11 @@ export default class Game {
 
 	private currentTeamIndex = -1;
 	private currentTeam: Team = undefined;
+	private selectedZone: Zone = undefined;
 	private teamIndicator: HTMLElement;
+	private moneyWrapper: HTMLElement;
+	private moneyDisplay: HTMLElement;
+	private profitDisplay: HTMLElement;
 
 	constructor() {
 
@@ -40,6 +44,9 @@ export default class Game {
 
 		this.fpsCounter = document.getElementById("fps");		
 		this.teamIndicator = document.getElementById("team_indicator");
+		this.moneyWrapper = document.getElementById("money_wrapper");
+		this.moneyDisplay = document.getElementById("money");
+		this.profitDisplay = document.getElementById("profit");
 
 		this.nextTurn();
 
@@ -96,11 +103,37 @@ export default class Game {
 	}
 
 	private handleTileClick = (hexXY: HexXY) => {
-		if (hexXY.hex.team === this.currentTeam) this.drawableWorld.highlightedZone = this.world.findConnected(hexXY.x, hexXY.y);
+
+		this.moneyWrapper.className = "hidden";
+		
+		if (hexXY.hex.team === this.currentTeam) {
+			let zone =  this.world.findConnected(hexXY.x, hexXY.y);
+			let capitalHex = undefined as HexXY;
+			for (let i = 0; i < zone.hexes.length; i++) {
+				const hex = zone.hexes[i];
+				if (hex.hex.piece === "capital") {
+					capitalHex = hex;
+					break;
+				}
+			}
+			if (capitalHex) {
+				this.selectedZone = zone;
+				this.drawableWorld.highlightedZone = this.selectedZone;
+				let capital = this.world.getCapital(capitalHex.x,capitalHex.y);
+				if (capital) {
+					let profit = World.profit(zone);
+					this.moneyDisplay.innerHTML = ""+capital.money;
+					this.profitDisplay.innerHTML = ""+(profit >= 0 ? '+' : '')+(profit);
+					this.profitDisplay.className = (profit > 0) ? "" : "negative";
+					this.moneyWrapper.className = "";
+				}
+			}
+		}
 	}
 
 	private handleEmptyClick = () => {
 		this.drawableWorld.highlightedZone = undefined;
+		this.moneyWrapper.className = "hidden";
 	}
 
 	private handleKeyDown = (evt: KeyboardEvent) => {

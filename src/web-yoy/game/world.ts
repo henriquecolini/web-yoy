@@ -116,6 +116,16 @@ export default class World {
 
 	}
 
+	public getCapital(x: number, y: number) {
+		if (this.hexAt(x,y) && this.hexAt(x,y).piece === "capital") {
+			for (let i = 0; i < this._capitals.length; i++) {
+				const cap = this._capitals[i];
+				if (cap.x == x && cap.y == y) return cap;
+			}
+		}
+		return undefined;
+	}
+
 	public hexAt(x: number, y: number): Hex {
 		return this._world[x] ? this._world[x][y] : undefined;
 	}
@@ -182,6 +192,11 @@ export default class World {
 			for (let j = 0; j < zone.hexes.length; j++) if (hex === zone.hexes[j].hex) return zone;
 		}
 		return undefined;
+	}
+
+	public static profit(zone: Zone): number {
+		// placeholder
+		return 0;
 	}
 
 	private onChange() {
