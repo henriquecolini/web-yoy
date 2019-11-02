@@ -48,9 +48,9 @@ export default class Game {
 		this.moneyDisplay = document.getElementById("money");
 		this.profitDisplay = document.getElementById("profit");
 
-		this.nextTurn();
+		this.nextTurn(true);
 
-		document.getElementById("next_turn").addEventListener("click", this.nextTurn);
+		document.getElementById("next_turn").addEventListener("click", ()=>{this.nextTurn()});
 
 		document.addEventListener("keydown", this.handleKeyDown);
 		document.addEventListener("keyup", this.handleKeyUp);
@@ -94,10 +94,17 @@ export default class Game {
 
 	}
 
-	private nextTurn = () => {
+	private nextTurn = (firstTime = false) => {
 		this.drawableWorld.highlightedZone = undefined;
+		this.moneyWrapper.className = "hidden";
 		this.currentTeamIndex++;
 		this.currentTeamIndex %= this.world.teams.length;
+		if (!firstTime && this.currentTeamIndex === 0) {
+			for (let i = 0; i < this.world.capitals.length; i++) {
+				const capital = this.world.capitals[i];
+				capital.money += World.profit(this.world.findConnected(capital.x,capital.y));
+			}
+		}
 		this.currentTeam = this.world.teams[this.currentTeamIndex];
 		this.teamIndicator.style.background = this.currentTeam.color;
 	}

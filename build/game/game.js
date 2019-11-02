@@ -26,10 +26,17 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.painter.camera.y += (camMove.y * this.camSpeed) * deltaTime;
                 this.fpsCounter.innerHTML = Math.ceil(1 / deltaTime) + " fps";
             };
-            this.nextTurn = () => {
+            this.nextTurn = (firstTime = false) => {
                 this.drawableWorld.highlightedZone = undefined;
+                this.moneyWrapper.className = "hidden";
                 this.currentTeamIndex++;
                 this.currentTeamIndex %= this.world.teams.length;
+                if (!firstTime && this.currentTeamIndex === 0) {
+                    for (let i = 0; i < this.world.capitals.length; i++) {
+                        const capital = this.world.capitals[i];
+                        capital.money += world_1.default.profit(this.world.findConnected(capital.x, capital.y));
+                    }
+                }
                 this.currentTeam = this.world.teams[this.currentTeamIndex];
                 this.teamIndicator.style.background = this.currentTeam.color;
             };
@@ -132,8 +139,8 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
             this.moneyWrapper = document.getElementById("money_wrapper");
             this.moneyDisplay = document.getElementById("money");
             this.profitDisplay = document.getElementById("profit");
-            this.nextTurn();
-            document.getElementById("next_turn").addEventListener("click", this.nextTurn);
+            this.nextTurn(true);
+            document.getElementById("next_turn").addEventListener("click", () => { this.nextTurn(); });
             document.addEventListener("keydown", this.handleKeyDown);
             document.addEventListener("keyup", this.handleKeyUp);
             document.addEventListener("wheel", this.handleWheel);
