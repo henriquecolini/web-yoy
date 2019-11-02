@@ -1,4 +1,5 @@
 import { Level } from "../resources/levels";
+import Pieces, { Piece } from "../resources/pieces";
 
 export interface Zone {
 	team: Team,
@@ -7,8 +8,7 @@ export interface Zone {
 
 export interface Hex {
 	team: Team,
-	piece: "capital"|"farm"|"forest"|"tower"|"unit",
-	pieceLevel: number
+	piece: Piece
 }
 
 export interface HexXY {
@@ -77,7 +77,7 @@ export default class World {
 
 			if (str !== ".") {
 
-				if (str === "#") hex = { team: undefined, piece: undefined, pieceLevel: undefined };
+				if (str === "#") hex = { team: undefined, piece: undefined };
 				else {
 					let parts = str.split("$");
 				
@@ -85,7 +85,7 @@ export default class World {
 					let capitalIndex = parts[1] ? parseInt(parts[1]) : undefined;
 
 					if (teamIndex !== undefined) {
-						hex = { team: this._teams[teamIndex], piece: capitalIndex !== undefined ? "capital" : undefined, pieceLevel: undefined };
+						hex = { team: this._teams[teamIndex], piece: capitalIndex !== undefined ? "capital" : undefined };
 						if (capitalIndex !== undefined) {
 							this._capitals[capitalIndex].x = x;
 							this._capitals[capitalIndex].y = y;
@@ -102,7 +102,6 @@ export default class World {
 		for (let i = 0; i < level.pieces.length; i++) {
 			const piece = level.pieces[i];
 			this._world[piece.x][piece.y].piece = piece.type;
-			this._world[piece.x][piece.y].pieceLevel = piece.level;
 		}
 
 		let height = 0;
@@ -195,8 +194,12 @@ export default class World {
 	}
 
 	public static profit(zone: Zone): number {
-		// placeholder
-		return 0;
+		let p = 0;
+		for (let i = 0; i < zone.hexes.length; i++) {
+			const hex = zone.hexes[i];
+			p += 1 + (hex.hex.piece ? Pieces.values(hex.hex.piece).profit : 0);
+		}
+		return p;
 	}
 
 	private onChange() {

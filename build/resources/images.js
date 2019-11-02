@@ -7,8 +7,8 @@ define(["require", "exports"], function (require, exports) {
     };
     const basePath = "src/images/";
     class Images {
-        static piece(type, level) {
-            let arr = images[type + ((level === undefined) ? "" : ("_" + level))];
+        static piece(type) {
+            let arr = images[type];
             if (!arr)
                 return undefined;
             return basePath + ((arr.length == 1) ? arr[0] : (arr[Math.floor(Math.random() * arr.length)]));

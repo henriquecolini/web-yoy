@@ -51,7 +51,7 @@ export default class DrawableWorld extends Drawable {
 						this.pieces.push(
 							new DrawableImage(
 								this.painter,
-								Images.piece(hex.piece, hex.pieceLevel),
+								Images.piece(hex.piece),
 								cx,
 								cy,
 								w+over,
@@ -97,7 +97,7 @@ export default class DrawableWorld extends Drawable {
 						this.pieces.push(
 							new DrawableImage(
 								this.painter,
-								"src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_" + hex.pieceLevel)) + ".png",
+								Images.piece(hex.piece),
 								cx,
 								cy,
 								w,

@@ -24,7 +24,7 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                                 let h = w * drawableHex_1.default.PERFECT_H_TO_W;
                                 let cx = x * (((3 * w) / 4) - 0.08);
                                 let cy = y * (h - 0.08) + (x % 2 === 1 ? ((h - 0.08) / 2) : 0);
-                                this.pieces.push(new drawableImage_1.default(this.painter, "src/images/" + hex.piece + ((hex.pieceLevel === undefined) ? ("") : ("_" + hex.pieceLevel)) + ".png", cx, cy, w, w));
+                                this.pieces.push(new drawableImage_1.default(this.painter, images_1.default.piece(hex.piece), cx, cy, w, w));
                             }
                         }
                     }
@@ -59,7 +59,7 @@ define(["require", "exports", "./drawableHex", "game/world", "./drawable", "./dr
                             }
                             : undefined));
                         if (hex.piece) {
-                            this.pieces.push(new drawableImage_1.default(this.painter, images_1.default.piece(hex.piece, hex.pieceLevel), cx, cy, w + over, w + over));
+                            this.pieces.push(new drawableImage_1.default(this.painter, images_1.default.piece(hex.piece), cx, cy, w + over, w + over));
                         }
                     }
                 }

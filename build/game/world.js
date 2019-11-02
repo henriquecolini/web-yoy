@@ -1,4 +1,4 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "../resources/pieces"], function (require, exports, pieces_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EMPTY_COLOUR = "#82b551";
@@ -35,13 +35,13 @@ define(["require", "exports"], function (require, exports) {
                 let y = Math.floor(i / this._width);
                 if (str !== ".") {
                     if (str === "#")
-                        hex = { team: undefined, piece: undefined, pieceLevel: undefined };
+                        hex = { team: undefined, piece: undefined };
                     else {
                         let parts = str.split("$");
                         let teamIndex = parts[0] ? parseInt(parts[0]) : undefined;
                         let capitalIndex = parts[1] ? parseInt(parts[1]) : undefined;
                         if (teamIndex !== undefined) {
-                            hex = { team: this._teams[teamIndex], piece: capitalIndex !== undefined ? "capital" : undefined, pieceLevel: undefined };
+                            hex = { team: this._teams[teamIndex], piece: capitalIndex !== undefined ? "capital" : undefined };
                             if (capitalIndex !== undefined) {
                                 this._capitals[capitalIndex].x = x;
                                 this._capitals[capitalIndex].y = y;
@@ -57,7 +57,6 @@ define(["require", "exports"], function (require, exports) {
             for (let i = 0; i < level.pieces.length; i++) {
                 const piece = level.pieces[i];
                 this._world[piece.x][piece.y].piece = piece.type;
-                this._world[piece.x][piece.y].pieceLevel = piece.level;
             }
             let height = 0;
             for (let x = 0; x < this._world.length; x++) {
@@ -146,7 +145,12 @@ define(["require", "exports"], function (require, exports) {
             return undefined;
         }
         static profit(zone) {
-            return 0;
+            let p = 0;
+            for (let i = 0; i < zone.hexes.length; i++) {
+                const hex = zone.hexes[i];
+                p += 1 + (hex.hex.piece ? pieces_1.default.values(hex.hex.piece).profit : 0);
+            }
+            return p;
         }
         onChange() {
             for (let i = 0; i < this.changeListeners.length; i++)

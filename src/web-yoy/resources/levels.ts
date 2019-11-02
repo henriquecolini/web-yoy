@@ -1,7 +1,9 @@
+import { Piece } from "./pieces";
+
 export interface Level {
 	teamCount: number,
 	capitals: {money: number, name: string}[],
-	pieces: {x: number, y: number, type: "farm"|"forest"|"tower"|"unit", level?: number}[],
+	pieces: {x: number, y: number, type: Piece}[],
 	width: number,
 	map: string;
 }

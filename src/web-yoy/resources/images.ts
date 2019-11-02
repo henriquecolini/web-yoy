@@ -10,8 +10,8 @@ const images: ImageList = {
 const basePath = "src/images/";
 
 export default class Images {
-	public static piece(type: string, level?: number): string {
-		let arr = images[type + ((level === undefined) ? "" : ("_" + level))];
+	public static piece(type: string): string {
+		let arr = images[type];
 		if (!arr) return undefined;
 		return basePath+((arr.length == 1) ? arr[0] : (arr[Math.floor(Math.random() * arr.length)]));
 	}
