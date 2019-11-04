@@ -17,6 +17,91 @@ define(["require", "exports", "../resources/pieces"], function (require, exports
     ];
     class World {
         constructor(level) {
+            this.getCapital = (x, y) => {
+                if (this.hexAt(x, y) && this.hexAt(x, y).piece === "capital") {
+                    for (let i = 0; i < this._capitals.length; i++) {
+                        const cap = this._capitals[i];
+                        if (cap.x == x && cap.y == y)
+                            return cap;
+                    }
+                }
+                return undefined;
+            };
+            this.hexAt = (x, y) => {
+                return this._world[x] ? this._world[x][y] : undefined;
+            };
+            this.refresh = () => {
+                this.onChange();
+            };
+            this.neighbours = (x, y) => {
+                let zig = (2 * (x % 2)) - 1;
+                let list = [];
+                let n0 = this.hexAt(x, y - 1);
+                let n1 = this.hexAt(x - 1, y);
+                let n2 = this.hexAt(x + 1, y);
+                let n3 = this.hexAt(x, y + 1);
+                let n4 = this.hexAt(x - 1, y + zig);
+                let n5 = this.hexAt(x + 1, y + zig);
+                if (n0)
+                    list.push({ hex: n0, x: x, y: y - 1 });
+                if (n1)
+                    list.push({ hex: n1, x: x - 1, y: y });
+                if (n2)
+                    list.push({ hex: n2, x: x + 1, y: y });
+                if (n3)
+                    list.push({ hex: n3, x: x, y: y + 1 });
+                if (n4)
+                    list.push({ hex: n4, x: x - 1, y: y + zig });
+                if (n5)
+                    list.push({ hex: n5, x: x + 1, y: y + zig });
+                return list;
+            };
+            this.findConnected = (x, y) => {
+                let targetTeam = this.hexAt(x, y).team;
+                let connected = [];
+                let ignore = [];
+                const sub = (sx, sy) => {
+                    let hex = this.hexAt(sx, sy);
+                    connected.push({ hex: hex, x: sx, y: sy });
+                    ignore.push(hex);
+                    let neis = this.neighbours(sx, sy);
+                    for (let i = 0; i < neis.length; i++) {
+                        const nei = neis[i];
+                        if ((nei.hex.team === targetTeam) && (ignore.indexOf(nei.hex) < 0))
+                            sub(nei.x, nei.y);
+                    }
+                };
+                sub(x, y);
+                return { hexes: connected, team: targetTeam };
+            };
+            this.findZones = () => {
+                let found = [];
+                let zones = [];
+                for (let x = 0; x < this._width; x++) {
+                    for (let y = 0; y < this._height; y++) {
+                        const hex = this.hexAt(x, y);
+                        if (hex && found.indexOf(hex) < 0) {
+                            let zone = this.findConnected(x, y);
+                            found.push(...(zone.hexes.map((hexXY) => { return hexXY.hex; })));
+                            zones.push(zone);
+                        }
+                    }
+                }
+                return zones;
+            };
+            this.onChange = () => {
+                for (let i = 0; i < this.changeListeners.length; i++)
+                    this.changeListeners[i]();
+            };
+            this.addChangeListener = (listener) => {
+                this.changeListeners.push(listener);
+            };
+            this.removeChangeListener = (listener) => {
+                this.changeListeners.splice(this.changeListeners.indexOf(listener));
+            };
+            this.clearChangeListeners = () => {
+                this.changeListeners = [];
+            };
             this.changeListeners = [];
             this._width = level.width;
             this._teams = [];
@@ -66,105 +151,6 @@ define(["require", "exports", "../resources/pieces"], function (require, exports
             }
             this._height = height;
         }
-        getCapital(x, y) {
-            if (this.hexAt(x, y) && this.hexAt(x, y).piece === "capital") {
-                for (let i = 0; i < this._capitals.length; i++) {
-                    const cap = this._capitals[i];
-                    if (cap.x == x && cap.y == y)
-                        return cap;
-                }
-            }
-            return undefined;
-        }
-        hexAt(x, y) {
-            return this._world[x] ? this._world[x][y] : undefined;
-        }
-        neighbours(x, y) {
-            let zig = (2 * (x % 2)) - 1;
-            let list = [];
-            let n0 = this.hexAt(x, y - 1);
-            let n1 = this.hexAt(x - 1, y);
-            let n2 = this.hexAt(x + 1, y);
-            let n3 = this.hexAt(x, y + 1);
-            let n4 = this.hexAt(x - 1, y + zig);
-            let n5 = this.hexAt(x + 1, y + zig);
-            if (n0)
-                list.push({ hex: n0, x: x, y: y - 1 });
-            if (n1)
-                list.push({ hex: n1, x: x - 1, y: y });
-            if (n2)
-                list.push({ hex: n2, x: x + 1, y: y });
-            if (n3)
-                list.push({ hex: n3, x: x, y: y + 1 });
-            if (n4)
-                list.push({ hex: n4, x: x - 1, y: y + zig });
-            if (n5)
-                list.push({ hex: n5, x: x + 1, y: y + zig });
-            return list;
-        }
-        findConnected(x, y) {
-            let targetTeam = this.hexAt(x, y).team;
-            let connected = [];
-            let ignore = [];
-            const sub = (sx, sy) => {
-                let hex = this.hexAt(sx, sy);
-                connected.push({ hex: hex, x: sx, y: sy });
-                ignore.push(hex);
-                let neis = this.neighbours(sx, sy);
-                for (let i = 0; i < neis.length; i++) {
-                    const nei = neis[i];
-                    if ((nei.hex.team === targetTeam) && (ignore.indexOf(nei.hex) < 0))
-                        sub(nei.x, nei.y);
-                }
-            };
-            sub(x, y);
-            return { hexes: connected, team: targetTeam };
-        }
-        findZones() {
-            let found = [];
-            let zones = [];
-            for (let x = 0; x < this._width; x++) {
-                for (let y = 0; y < this._height; y++) {
-                    const hex = this.hexAt(x, y);
-                    if (hex && found.indexOf(hex) < 0) {
-                        let zone = this.findConnected(x, y);
-                        found.push(...(zone.hexes.map((hexXY) => { return hexXY.hex; })));
-                        zones.push(zone);
-                    }
-                }
-            }
-            return zones;
-        }
-        static zoneOf(zones, hex) {
-            for (let i = 0; i < zones.length; i++) {
-                const zone = zones[i];
-                for (let j = 0; j < zone.hexes.length; j++)
-                    if (hex === zone.hexes[j].hex)
-                        return zone;
-            }
-            return undefined;
-        }
-        static profit(zone) {
-            let p = 0;
-            for (let i = 0; i < zone.hexes.length; i++) {
-                const hex = zone.hexes[i];
-                p += 1 + (hex.hex.piece ? pieces_1.default.values(hex.hex.piece).profit : 0);
-            }
-            return p;
-        }
-        onChange() {
-            for (let i = 0; i < this.changeListeners.length; i++)
-                this.changeListeners[i]();
-        }
-        addChangeListener(listener) {
-            this.changeListeners.push(listener);
-        }
-        removeChangeListener(listener) {
-            this.changeListeners.splice(this.changeListeners.indexOf(listener));
-        }
-        clearChangeListeners() {
-            this.changeListeners = [];
-        }
         get world() { return this._world; }
         get width() { return this._width; }
         get height() { return this._height; }
@@ -172,5 +158,22 @@ define(["require", "exports", "../resources/pieces"], function (require, exports
         get capitals() { return this._capitals; }
     }
     exports.default = World;
+    World.zoneOf = (zones, hex) => {
+        for (let i = 0; i < zones.length; i++) {
+            const zone = zones[i];
+            for (let j = 0; j < zone.hexes.length; j++)
+                if (hex === zone.hexes[j].hex)
+                    return zone;
+        }
+        return undefined;
+    };
+    World.profit = (zone) => {
+        let p = 0;
+        for (let i = 0; i < zone.hexes.length; i++) {
+            const hex = zone.hexes[i];
+            p += 1 + (hex.hex.piece ? pieces_1.default.values(hex.hex.piece).profit : 0);
+        }
+        return p;
+    };
 });
 //# sourceMappingURL=world.js.map

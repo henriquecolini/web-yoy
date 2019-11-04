@@ -10,7 +10,7 @@ import Images from "../resources/images";
 export default class DrawableWorld extends Drawable {
 	
 	private world: World;
-	private hexes: DrawableHex[];
+	private hexes: {drawHex: DrawableHex, x: number, y: number}[];
 	private zones: DrawableZone[];
 	private pieces: DrawableImage[];
 	private _highlightedZone: DrawableZone;
@@ -31,8 +31,8 @@ export default class DrawableWorld extends Drawable {
 					let cx = (x*((3*w)/4)) - (over/2);
 					let cy = (y*h + (x%2 === 1 ? (h/2) : 0)) - (over/2);
 
-					this.hexes.push(
-						new DrawableHex(
+					this.hexes.push({
+						drawHex: new DrawableHex(
 							this.painter,
 							hex.team ? hex.team.color : EMPTY_COLOUR, hex.team ? "rgba(0,0,0,0.2)" : EMPTY_BORDER_COLOUR,
 							0.4,
@@ -45,8 +45,10 @@ export default class DrawableWorld extends Drawable {
 								hexClickListener({hex: hex, x: x, y: y});
 							}
 							: undefined
-						)
-					);
+						),
+						x: x,
+						y: y
+					});
 					if (hex.piece) {						
 						this.pieces.push(
 							new DrawableImage(
@@ -62,7 +64,7 @@ export default class DrawableWorld extends Drawable {
 				}
 			}	
 		}
-		this.refreshZones();
+		this.refreshZones();		
 	}
 
 	public refreshZones = () => {
@@ -82,39 +84,39 @@ export default class DrawableWorld extends Drawable {
 
 	public updateHexes = () => {
 		this.pieces = [];
-		for (let x = 0; x < this.world.width; x++) {
-			for (let y = 0; y < this.world.height; y++) {
-				const hex = this.world.hexAt(x,y);
-				if (hex) {
-					this.hexes[(this.world.width*y)+x].fill = hex.team ? hex.team.color : EMPTY_COLOUR;
-					if (hex.piece) {
+		for (let i = 0; i < this.hexes.length; i++) {
+			const drawHex = this.hexes[i];
+			const hex = this.world.hexAt(drawHex.x,drawHex.y);
+			if (hex) {
+				drawHex.drawHex.fill = hex.team ? hex.team.color : EMPTY_COLOUR;
+				if (hex.piece) {
 
-						let w = 10;
-						let h = w * DrawableHex.PERFECT_H_TO_W;
-						let cx = x * (((3 * w) / 4) - 0.08);
-						let cy = y * (h - 0.08) + (x % 2 === 1 ? ((h - 0.08) / 2) : 0);
+					let over = 0.04;
+					let w = HEX_WIDTH;
+					let h = w * DrawableHex.PERFECT_H_TO_W;
+					let cx = (drawHex.x*((3*w)/4)) - (over/2);
+					let cy = (drawHex.y*h + (drawHex.x%2 === 1 ? (h/2) : 0)) - (over/2);
 
-						this.pieces.push(
-							new DrawableImage(
-								this.painter,
-								Images.piece(hex.piece),
-								cx,
-								cy,
-								w,
-								w
-							)
-						);
-					}
+					this.pieces.push(
+						new DrawableImage(
+							this.painter,
+							Images.piece(hex.piece),
+							cx,
+							cy,
+							w + over,
+							w + over
+						)
+					);
 				}
-			}	
+			}
 		}
 		this.refreshZones();
 	}
 
 	public draw = () => {		
-		for (let i = 0; i < this.hexes.length; i++) this.hexes[i].draw();
-		for (let i = 0; i < this.pieces.length; i++) this.pieces[i].draw();
+		for (let i = 0; i < this.hexes.length; i++) this.hexes[i].drawHex.draw();
 		for (let i = 0; i < this.zones.length; i++) this.zones[i].draw();
+		for (let i = 0; i < this.pieces.length; i++) this.pieces[i].draw();
 		if (this._highlightedZone) this._highlightedZone.draw();
 	}
 
@@ -134,20 +136,16 @@ export default class DrawableWorld extends Drawable {
 
 		let averageX = 0;
 		let averageY = 0;
-		let inc = 0;
-
-		for (let x = 0; x < this.world.width; x++) {
-			for (let y = 0; y < this.world.height; y++) {
-				const draw = this.hexes[inc];
-				if (draw) {
-					averageX += draw.x + (draw.w/2);
-					averageY += draw.y + (draw.h/2);
-					inc++;
-				}
-			}
+		
+		for (let i = 0; i < this.hexes.length; i++) {
+			const draw = this.hexes[i].drawHex;
+			if (draw) {
+				averageX += draw.x + (draw.w/2);
+				averageY += draw.y + (draw.h/2);
+			}			
 		}
 
-		return {x: averageX/inc, y: averageY/inc};
+		return {x: averageX/this.hexes.length, y: averageY/this.hexes.length};
 
 	}
 

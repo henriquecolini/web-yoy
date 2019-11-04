@@ -70,8 +70,8 @@ define(["require", "exports", "./drawableBounds"], function (require, exports, d
             this.painter.draw();
         }
     }
+    exports.default = DrawableHex;
     DrawableHex.PERFECT_W_TO_H = (2 * Math.sqrt(3)) / 3;
     DrawableHex.PERFECT_H_TO_W = Math.sqrt(3) / 2;
-    exports.default = DrawableHex;
 });
 //# sourceMappingURL=drawableHex.js.map

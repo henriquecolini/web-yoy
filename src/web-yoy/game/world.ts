@@ -115,7 +115,7 @@ export default class World {
 
 	}
 
-	public getCapital(x: number, y: number) {
+	public getCapital = (x: number, y: number) => {
 		if (this.hexAt(x,y) && this.hexAt(x,y).piece === "capital") {
 			for (let i = 0; i < this._capitals.length; i++) {
 				const cap = this._capitals[i];
@@ -125,11 +125,15 @@ export default class World {
 		return undefined;
 	}
 
-	public hexAt(x: number, y: number): Hex {
+	public hexAt = (x: number, y: number): Hex => {
 		return this._world[x] ? this._world[x][y] : undefined;
 	}
 
-	public neighbours(x: number, y: number): HexXY[] {
+	public refresh = () => {
+		this.onChange();
+	}
+
+	public neighbours = (x: number, y: number): HexXY[] => {
 		let zig = (2*(x%2))-1;
 		let list = [];
 		let n0 = this.hexAt(x,y-1);
@@ -147,7 +151,7 @@ export default class World {
 		return list;
 	}
 
-	public findConnected(x: number, y: number): Zone {
+	public findConnected = (x: number, y: number): Zone => {
 		let targetTeam = this.hexAt(x,y).team;
 		let connected = [] as HexXY[];
 		let ignore = [] as Hex[];
@@ -165,7 +169,7 @@ export default class World {
 		return {hexes: connected, team: targetTeam};
 	}
 
-	public findZones(): Zone[] {
+	public findZones = (): Zone[] => {
 
 		let found = [] as Hex[];
 		let zones = [] as Zone[];
@@ -185,7 +189,7 @@ export default class World {
 
 	}
 
-	public static zoneOf(zones: Zone[], hex: Hex): Zone {
+	public static zoneOf = (zones: Zone[], hex: Hex): Zone => {
 		for (let i = 0; i < zones.length; i++) {
 			const zone = zones[i];
 			for (let j = 0; j < zone.hexes.length; j++) if (hex === zone.hexes[j].hex) return zone;
@@ -193,7 +197,7 @@ export default class World {
 		return undefined;
 	}
 
-	public static profit(zone: Zone): number {
+	public static profit = (zone: Zone): number => {
 		let p = 0;
 		for (let i = 0; i < zone.hexes.length; i++) {
 			const hex = zone.hexes[i];
@@ -202,19 +206,19 @@ export default class World {
 		return p;
 	}
 
-	private onChange() {
+	private onChange = () => {
 		for (let i = 0; i < this.changeListeners.length; i++) this.changeListeners[i]();
 	}
 
-	public addChangeListener(listener: ()=>void) {
+	public addChangeListener = (listener: ()=>void) => {
 		this.changeListeners.push(listener);
 	}
 
-	public removeChangeListener(listener: ()=>void) {
+	public removeChangeListener = (listener: ()=>void) => {
 		this.changeListeners.splice(this.changeListeners.indexOf(listener));
 	}
 
-	public clearChangeListeners() {
+	public clearChangeListeners = () => {
 		this.changeListeners = [];
 	}
 

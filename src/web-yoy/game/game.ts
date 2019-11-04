@@ -3,6 +3,7 @@ import DrawableHex from "../painter/drawableHex";
 import World, { EMPTY_COLOUR, HexXY, Team, Zone } from "./world";
 import DrawableWorld from "../painter/drawableWorld";
 import LEVELS from "../resources/levels";
+import Pieces from "../resources/pieces";
 
 export const HEX_WIDTH = 5;
 
@@ -99,19 +100,51 @@ export default class Game {
 		this.moneyWrapper.className = "hidden";
 		this.currentTeamIndex++;
 		this.currentTeamIndex %= this.world.teams.length;
-		if (!firstTime && this.currentTeamIndex === 0) {
-			for (let i = 0; i < this.world.capitals.length; i++) {
-				const capital = this.world.capitals[i];
-				capital.money += World.profit(this.world.findConnected(capital.x,capital.y));
-			}
-		}
+		if (!firstTime && this.currentTeamIndex === 0) this.onNextRound();
 		this.currentTeam = this.world.teams[this.currentTeamIndex];
 		this.teamIndicator.style.background = this.currentTeam.color;
+	}
+
+	private onNextRound = () => {
+		for (let i = 0; i < this.world.capitals.length; i++) {
+			const capital = this.world.capitals[i];
+			capital.money += World.profit(this.world.findConnected(capital.x,capital.y));
+		}
+		let forestData = Pieces.values("forest");
+		
+		let placedForests = [] as {x: number, y: number}[];
+		for (let x = 0; x < this.world.width; x++) {
+			for (let y = 0; y < this.world.height; y++) {
+				const hex = this.world.hexAt(x,y);
+				if (hex && (hex.piece === "forest")) {
+					if (Math.random() <= forestData.spread) {
+						let neis = this.world.neighbours(x,y);
+						let indexes = [];
+						for (let j = 0; j < neis.length; j++) {
+							const nei = neis[j];
+							if (!nei.hex.piece) {
+								indexes.push(j);
+							}
+						}
+						if (indexes.length > 0) {
+							let grown = neis[indexes[Math.floor(Math.random()*indexes.length)]];
+							placedForests.push({x: grown.x, y: grown.y});
+						}
+					}
+				}
+			}	
+		}
+		for (let i = 0; i < placedForests.length; i++) {
+			const forest = placedForests[i];
+			this.world.hexAt(forest.x,forest.y).piece = "forest";
+		}	
+		this.world.refresh();
 	}
 
 	private handleTileClick = (hexXY: HexXY) => {
 
 		this.moneyWrapper.className = "hidden";
+		this.drawableWorld.highlightedZone = undefined;
 		
 		if (hexXY.hex.team === this.currentTeam) {
 			let zone =  this.world.findConnected(hexXY.x, hexXY.y);

@@ -1,4 +1,4 @@
-define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld", "../resources/levels"], function (require, exports, painter_1, world_1, drawableWorld_1, levels_1) {
+define(["require", "exports", "../painter/painter", "./world", "../painter/drawableWorld", "../resources/levels", "../resources/pieces"], function (require, exports, painter_1, world_1, drawableWorld_1, levels_1, pieces_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HEX_WIDTH = 5;
@@ -31,17 +31,48 @@ define(["require", "exports", "../painter/painter", "./world", "../painter/drawa
                 this.moneyWrapper.className = "hidden";
                 this.currentTeamIndex++;
                 this.currentTeamIndex %= this.world.teams.length;
-                if (!firstTime && this.currentTeamIndex === 0) {
-                    for (let i = 0; i < this.world.capitals.length; i++) {
-                        const capital = this.world.capitals[i];
-                        capital.money += world_1.default.profit(this.world.findConnected(capital.x, capital.y));
-                    }
-                }
+                if (!firstTime && this.currentTeamIndex === 0)
+                    this.onNextRound();
                 this.currentTeam = this.world.teams[this.currentTeamIndex];
                 this.teamIndicator.style.background = this.currentTeam.color;
             };
+            this.onNextRound = () => {
+                for (let i = 0; i < this.world.capitals.length; i++) {
+                    const capital = this.world.capitals[i];
+                    capital.money += world_1.default.profit(this.world.findConnected(capital.x, capital.y));
+                }
+                let forestData = pieces_1.default.values("forest");
+                let placedForests = [];
+                for (let x = 0; x < this.world.width; x++) {
+                    for (let y = 0; y < this.world.height; y++) {
+                        const hex = this.world.hexAt(x, y);
+                        if (hex && (hex.piece === "forest")) {
+                            if (Math.random() <= forestData.spread) {
+                                let neis = this.world.neighbours(x, y);
+                                let indexes = [];
+                                for (let j = 0; j < neis.length; j++) {
+                                    const nei = neis[j];
+                                    if (!nei.hex.piece) {
+                                        indexes.push(j);
+                                    }
+                                }
+                                if (indexes.length > 0) {
+                                    let grown = neis[indexes[Math.floor(Math.random() * indexes.length)]];
+                                    placedForests.push({ x: grown.x, y: grown.y });
+                                }
+                            }
+                        }
+                    }
+                }
+                for (let i = 0; i < placedForests.length; i++) {
+                    const forest = placedForests[i];
+                    this.world.hexAt(forest.x, forest.y).piece = "forest";
+                }
+                this.world.refresh();
+            };
             this.handleTileClick = (hexXY) => {
                 this.moneyWrapper.className = "hidden";
+                this.drawableWorld.highlightedZone = undefined;
                 if (hexXY.hex.team === this.currentTeam) {
                     let zone = this.world.findConnected(hexXY.x, hexXY.y);
                     let capitalHex = undefined;

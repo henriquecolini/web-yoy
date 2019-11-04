@@ -1,32 +1,27 @@
 import DrawableBounds from "./drawableBounds";
 import Painter from "./painter";
+import { LoadedImage } from "../resources/images";
 
 export default class DrawableImage extends DrawableBounds {
 	
-	private image: HTMLImageElement;
+	private image: LoadedImage;
 	private isLoaded = false;
 
-	constructor(painter: Painter, imageSrc: string, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
+	constructor(painter: Painter, image: LoadedImage, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
 		super(painter,x,y,w,h);
-		this.image = new Image();
+		this.image = image;				
 		this.image.onload = () => {
 			this.isLoaded = true;
 			painter.draw();
 		}
-		this.image.src = imageSrc;
 	}
 
 	public draw = () => {
 		if (this.isLoaded) {
 			let ctx = this.painter.context;
 			let u = this.painter.unit;
-			ctx.drawImage(this.image,u*this.x,u*this.y,u*this.w,u*this.h);
+			ctx.drawImage(this.image.image,u*this.x,u*this.y,u*this.w,u*this.h);
 		}
-	}
-
-	set imageSrc(imageSrc2: string) {
-		this.isLoaded = false;
-		this.image.src = imageSrc2;
 	}
 
 }
